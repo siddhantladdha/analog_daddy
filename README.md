@@ -2,9 +2,9 @@
 
 ## Motivation
 
-This library shows Analog Design who the daddy is. Well, it's just an attempt to make transistor sizing less painful. Additionally, includes certain scripts and tools to make any aspect of Analog Design a little less painful.
+This library shows Analog Design who the daddy is. Well, it's just an attempt to make transistor sizing less painful. Additionally, it includes certain scripts and tools to make any aspect of Analog Design a little less painful.
 
-Analog Design requires practice, intuition and experience. It is difficult to build circuits for a given specification that works across PVT (process, voltage and temperature corners). Then they should also work in real silicon.
+Analog Design requires practice, intuition and experience. It is difficult to build circuits for a given specification that works across PVT (process, voltage and temperature) corners. Then they should also work in real silicon.
 It is 'hard' and requires time.
 However, as far as the transistor sizing for a given DC operating point goes, with complicated models, pen-paper calculations to actual design convergence
 have become more painful. The lookup table based design methodology tries to find a middle ground. You can read more about it in
@@ -55,7 +55,7 @@ The following are the key features in order of priority of them being implemente
 
 ## Acknowledgements and Licensing
 
-This library was created with extensive help of ChatGPT and White Claw Hard Seltzer. Both have helped equally in programming, debugging and testing with extra patience donated by White claw
+This library was created with extensive help of ChatGPT and White Claw Hard Seltzer. Both have helped equally in programming, debugging and testing; with extra patience donated by White claw
 when ChatGPT refused to work for me. Additionally, I have use few ideas from the previous work mentioned above. This work will be licensed as AGPLv3 since I would not
 want anyone to monetize this and even if they do I want the changes to be given back to this tool's codebase.
 
@@ -102,7 +102,8 @@ pip install git+ssh://git@github.com/siddhantladdha/analog_daddy.git
 Sometimes, the linux servers you design on at workplace have limited or no internet
 access. Creating an offline installation of miniconda/conda and porting it to your
 server is painful. The good news is if the IT department at your workplace is
-competent, you might already have access to reasonably newer versions of the above required libraries. In that case you can just clone this repository.
+competent, you might already have access to reasonably newer versions of the above
+required libraries. In that case you can just clone this repository.
 
 If there is no such provision in place I feel it is your right to file a JIRA ticket and
 get such an installation working. (They can follow the online installation and set it up
