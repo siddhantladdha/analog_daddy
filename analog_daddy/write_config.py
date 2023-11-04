@@ -10,6 +10,20 @@ write_config()
 """
 import time
 
+def prompt_natural_number(message, default, min_val=None, max_val=None):
+    """Prompt the user for a natural number and validate against optional bounds."""
+    while True:
+        try:
+            value = input(f"{message} (default: {default}): ") or default
+            value = int(value)
+            if value < 1:
+                raise ValueError("Natural numbers are greater than 0.")
+            if (min_val is not None and value < min_val) or (max_val is not None and value > max_val):
+                raise ValueError
+            return value
+        except ValueError:
+            print("Invalid input. Please provide a valid natural number.")
+
 def prompt_float(message, default, min_val=None, max_val=None):
     """Prompt the user for a float and validate against optional bounds."""
     while True:
@@ -51,6 +65,7 @@ def write_config(config_path):
         'METHOD_KEY': 'METHOD',
         'WARNING_KEY': 'WARNING',
         'VDD': 0.9,
+        'IS_INTEGER': False,
         'L_MIN': 1e-06,
         'L_MAX': 2e-06,
         'W_MIN': 320e-09,
@@ -74,16 +89,29 @@ def write_config(config_path):
 
     vdd = prompt_float("Enter the value for VDD",
                        default_values['VDD'], min_val=0.1, max_val=50)
-    l_min = prompt_float("Enter the value for L_MIN",
-                         default_values['L_MIN'], min_val=1e-15, max_val=1e-3)
-    l_max = prompt_float("Enter the value for L_MAX. Must be greater than L_MIN",
-                         default_values['L_MAX'], min_val=1e-15, max_val=1e-3)
-    w_min = prompt_float("Enter the value for W_MIN",
-                         default_values['W_MIN'], min_val=1e-15, max_val=1e-3)
-    w_max = prompt_float("Enter the value for W_MAX. Must be greater than W_MIN",
-                         default_values['W_MAX'], min_val=1e-15, max_val=1e-3)
+    is_integer = prompt_bool("Enter the value for IS_INTEGER",
+                                   default_values['IS_INTEGER'])
+    if is_integer:
+        l_min = prompt_natural_number("Enter the value for L_MIN",
+                                      default_values['L_MIN'], min_val=1, max_val=5)
+        l_max = prompt_natural_number("Enter the value for L_MAX. Must be greater than L_MIN",
+                                      default_values['L_MAX'], min_val=1, max_val=100)
+        w_min = prompt_natural_number("Enter the value for W_MIN",
+                                      default_values['W_MIN'], min_val=1, max_val=5)
+        w_max = prompt_natural_number("Enter the value for W_MAX. Must be greater than W_MIN",
+                                      default_values['W_MAX'], min_val=1, max_val=100)
+    else:
+        l_min = prompt_float("Enter the value for L_MIN",
+                            default_values['L_MIN'], min_val=1e-15, max_val=1e-3)
+        l_max = prompt_float("Enter the value for L_MAX. Must be greater than L_MIN",
+                            default_values['L_MAX'], min_val=1e-15, max_val=1e-3)
+        w_min = prompt_float("Enter the value for W_MIN",
+                            default_values['W_MIN'], min_val=1e-15, max_val=1e-3)
+        w_max = prompt_float("Enter the value for W_MAX. Must be greater than W_MIN",
+                            default_values['W_MAX'], min_val=1e-15, max_val=1e-3)
+
     voltage_step_size = prompt_float("Enter the value for VOLTAGE_STEP_SIZE",
-                                     default_values['VOLTAGE_STEP_SIZE'], min_val=1e-3, max_val=10)
+                                    default_values['VOLTAGE_STEP_SIZE'], min_val=1e-3, max_val=10)
 
     importer_verbose = prompt_bool("Enter the value for IMPORTER_VERBOSE",
                                    default_values['IMPORTER_VERBOSE'])
@@ -114,6 +142,10 @@ WARNING_KEY = "{warning_key}"
 
 # Supply Voltage (Vdd)
 VDD = {vdd}
+
+# for technologies that only allow stacking and multipliers.
+# Is the length/width an integer?
+IS_INTEGER = {is_integer}
 
 # Length Range
 L_MIN = {l_min}
