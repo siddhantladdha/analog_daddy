@@ -1,9 +1,9 @@
 ---
 name: Feature request
 about: Suggest an idea for this project
-title: ''
+title: "[Feature Request]"
 labels: ''
-assignees: ''
+assignees: siddhantladdha
 
 ---
 
