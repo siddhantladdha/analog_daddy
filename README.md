@@ -136,3 +136,25 @@ python -m unittest discover tests
 python setup.py sdist bdist_wheel # run this command after any updates to make sure package is build correctly.
 # pip freeze > requirements.txt  # incase you add or remove any dependencies.
 ```
+
+## Additional Resources
+
+1. [Systematic Design of Analog CMOS Circuits: Using Pre-Computed Lookup Tables by P.G.A. Jespers and B. Murmann, Cambridge University Press, 2017](https://www.cambridge.org/us/academic/subjects/engineering/circuits-and-systems/systematic-design-analog-cmos-circuits-using-pre-computed-lookup-tables?format=AR). This book started it all for me. It serves as a good starting point. Following ar some suggestions.
+   1. If you don't understand chapter 2 that is okay. But brave through it. Get an overview.
+   2. Chapter 1 and 3 are the most critical and spend some time on it. It is okay if you don't follow along with MATLAB scripts. Understand the principles.
+   3. It is okay if the scripts in the book seems overkill to you. I personally feel they are. They try to solve it as a global optimization problem and personally, turned analog design into  scripting for me (which I hated). Hence, I felt the need to create a slightly different version of it for myself. The key intent is to create your own version for yourself. I feel the book introduces the idea of using Lookup Tables and that gm_id methodology is just an example of doing so.
+   4. The key summary is use lookup table and whatever independent variable you wish to use (gm_id, vov, id_w, inversion coefficient, blah blah)
+2. Are you new to Python? No worries.
+   1. Firstly, to get the correct environment setup you need Anaconda/Miniconda and Jupyterlab. [Basics of Python: Part 1 - Introduction](https://youtu.be/FggJNXN68fs?si=Uk--zh4XFII4AwPv)
+   2. Then go through [Introduction to Python Playlist](https://www.youtube.com/playlist?list=PLkdGijFCNuVmiZM7NX_bnR6A5oFyimf-z).
+   3. For more specialized and detailed videos use the links below.
+      1. [NumPy Tutorial (2022): For Physicists, Engineers, and Mathematicians](https://youtu.be/DcfYgePyedM?si=WRUioPP8tRBCQJBk)
+      2. [Matplotlib Tutorial (2022): For Physicists, Engineers, and Mathematicians](https://youtu.be/cTJBJH8hacc?si=kN5w6S58vffuOqXI)
+      3. [SymPy Tutorial (2022): For Physicists, Engineers, and Mathematicians](https://youtu.be/1yBPEPhq54M?si=WYSHIE_R4jy2Z8cs)
+      4. [SciPy Tutorial (2022): For Physicists, Engineers, and Mathematicians](https://youtu.be/jmX4FOUEfgU?si=RLHj7K_l2FPSAIwf)
+      5. [Plotly Tutorial 2023](https://youtu.be/GGL6U0k8WYA?si=izt2m7oURbfZFPae)
+      6. If you are confused about the order to follow [here is the suggestion](https://www.youtube.com/watch?v=atxUuldUcfI)
+
+## Provide Help/Feedback
+
+1. The best way to provide help and feedback is to [create a GitHub account](https://docs.github.com/en/get-started/signing-up-for-github/signing-up-for-a-new-github-account) (if you don't have one) and then [create an issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/creating-an-issue) and make it as detailed as possible.
