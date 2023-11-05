@@ -33,7 +33,7 @@ support cross-ratio lookup.
 With all these different variants available, yet with certain shortcomings in each approach, I decided to start a more 'modern' and open implementation.
 But, thanks to these existing code-bases I don't have to reinvent the wheel and this serves as a good reference.
 
-4. [Mohamed Watfa's gmid toolkit in Python](https://github.com/medwatt/gmid): While I was trying to actively avoid writing the library, he has written something which works. I am in process of taking ideas from this toolkit. However, it currently does not support importing data from Cadence's Assembler and I have no clue how the numpy file is structured to use the functions. The author has updated with a new way to generate LUT recently (Nov 2 2023).
+4. [Mohamed Watfa's gmid toolkit in Python](https://github.com/medwatt/gmid): While I was trying to actively avoid writing the library, he has written something which works. A recent update made it possible for me to use `ngspice` binary directly for LUT generation and I now have a complete database of FreePDK45 devices. It took some basic scripting to make the LUT generated using the provided functions compliant with my LUT structure. Additionally, it got updated with new plots which look really beautiful! You can see the script I used for the conversion. [FreePDK45 LUT Generation](./docs/notebooks/freepdk_45nm_LUT_generation.ipynb)
 
 ## Roadmap
 
@@ -51,7 +51,7 @@ The following are the key features in order of priority of them being implemente
 - [x] Support all the lookup modes
 - [ ] Support for `lookupVGS` and corresponding test suite.
 - [x] Give templates for basic and interactive plotting using Plotly/Dash. See the [notebooks directory](./docs/notebooks)
-- [x] Have basic plots and a template `.npy` file for ~[Skywater-130 nm PDK](https://github.com/google/skywater-pdk)~ GPDK for illustration and design purposes. I will not be using Skywater-130 nm PDK since a there is no version of PDK available to setup with Cadence for free. Instead, a derived data and plot of GPDK will be shared here. This will not violate any licensing restrictions since this is derived data and and has smaller data points.
+- [x] Have basic plots and a template `.npy` file for ~[Skywater-130 nm PDK](https://github.com/google/skywater-pdk)~ ~GPDK~ FreePDK45 for illustration and design purposes. I will not be using Skywater-130 nm PDK since a there is no version of PDK available to setup with Cadence for free. Instead, a derived data and plot of FreePDK45 will be shared here. The GPDK45.npy file will be slowly phased out from the test suite since it is useless with the smaller data points. However, its existence does not violate any licensing restrictions since this is derived data and and has smaller data points.
 
 ## Acknowledgements and Licensing
 
@@ -64,7 +64,7 @@ to make the source code public. NO! If it is distributed over a network, the "us
 to request the source code, which is usually accessible to anyone within your organization. So you are all good to go and use it even within your company.
 I would love to merge the changes you make to the tool and be public, but I understand that might not be entirely possible, which is okay.
 
-Special thanks to Bharadwaj Padmanabhan for helping in testbench creation and providing the relevant images. I would also like to thank Gayathri Nair for helping me to generate the LUT for GPDK90.
+Special thanks to Bharadwaj Padmanabhan for helping in testbench creation and providing the relevant images. I would also like to thank Gayathri Nair for helping me to generate the LUT for GPDK90. (For testing out the testbench on her own setup.)
 
 ## Installation
 

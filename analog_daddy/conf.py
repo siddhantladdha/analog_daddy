@@ -7,7 +7,7 @@ as follows:
 from analog_daddy.write_config import write_config
 write_config()
 '''
-# This file was generated on 03/11/2023 10:36:33 Zone: EDT by write_config.py
+# This file was generated on 05/11/2023 06:33:22 Zone: EST by write_config.py
 # DON'T YOU DARE EDIT THIS FILE MANUALLY.
 # Constants to avoid magic strings
 PARAMETER_TAG = "Parameters:"
@@ -22,15 +22,19 @@ METHOD_KEY = "METHOD"
 WARNING_KEY = "WARNING"
 
 # Supply Voltage (Vdd)
-VDD = 0.9
+VDD = 1.0
+
+# for technologies that only allow stacking and multipliers.
+# Is the length/width an integer?
+IS_INTEGER = False
 
 # Length Range
-L_MIN = 1e-06
-L_MAX = 2e-06
+L_MIN = 4.5e-08
+L_MAX = 1e-05
 
 # Width Range (Per-Finger)
-W_MIN = 3.2e-07
-W_MAX = 1e-05
+W_MIN = 9e-08
+W_MAX = 0.001
 
 # Voltage Step Size = 20 mV. This is the default step size
 # which will be selected for our voltage sweeps.
