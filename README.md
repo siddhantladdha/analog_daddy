@@ -33,7 +33,7 @@ support cross-ratio lookup.
 With all these different variants available, yet with certain shortcomings in each approach, I decided to start a more 'modern' and open implementation.
 But, thanks to these existing code-bases I don't have to reinvent the wheel and this serves as a good reference.
 
-4. [Mohamed Watfa's gmid toolkit in Python](https://github.com/medwatt/gmid): While I was trying to actively avoid writing the library, he has written something which works. A recent update made it possible for me to use `ngspice` binary directly for LUT generation and I now have a complete database of FreePDK45 devices. It took some basic scripting to make the LUT generated using the provided functions compliant with my LUT structure. Additionally, it got updated with new plots which look really beautiful! You can see the script I used for the conversion. [FreePDK45 LUT Generation](./docs/notebooks/freepdk_45nm_LUT_generation.ipynb)
+4. [Mohamed Watfa's gmid toolkit in Python](https://github.com/medwatt/gmid): While I was trying to actively avoid writing the library, he has written something which works. A recent update made it possible for me to use `ngspice` binary directly for LUT generation and I now have a complete database of FreePDK45 devices. It took some basic scripting to make the LUT generated using the provided functions compliant with my LUT structure. Additionally, it got updated with new plots which look really beautiful! You can see the script I used for the conversion. [FreePDK45 LUT Generation](./docs/notebooks/freepdk_45nm_LUT_generation.ipynb). You can also directly [download the FreePDK45 LUT](https://github.com/siddhantladdha/freepdk45_lut/releases) I generated using this method.
 
 ## Roadmap
 
