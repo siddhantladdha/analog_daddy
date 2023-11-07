@@ -78,3 +78,28 @@ def look_upW(transistor,length_increment=10e-9):
               {transistor['gm_id']} and id of {transistor['id']}.""")
         return False
     return True
+
+def print_transistor(transistor_dict):
+    """Print the transistor dictionary in a nice format."""
+    print("\n-----------------------------------\n")
+    for key in transistor_dict.keys():
+        if key == "type":
+            print("Type: Refer dictionary.")
+        else:
+            print(f"""{key}:{transistor_dict[key]}""")
+    print("\n-----------------------------------\n")
+
+def print_circuit(circuit_dict):
+    """Print the circuit dictionary in a nice format."""
+    print("\n----------BEGIN--------------------\n")
+    for key in circuit_dict.keys():
+        print_transistor(circuit_dict[key])
+    print("\n------------END--------------------\n")
+
+def look_upW_circuit(circuit_dict,length_increment=10e-9):
+    """Look up widths for the entire circuit."""
+    for key in circuit_dict.keys():
+        if look_upW(circuit_dict[key],length_increment=length_increment):
+            return True
+        else:
+            return False
