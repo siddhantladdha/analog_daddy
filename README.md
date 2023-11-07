@@ -64,6 +64,7 @@ to make the source code public. NO! If it is distributed over a network, the "us
 to request the source code, which is usually accessible to anyone within your organization. So you are all good to go and use it even within your company.
 I would love to merge the changes you make to the tool and be public, but I understand that might not be entirely possible, which is okay.
 
+I would like to thank [Prof. Brian Floyd](https://bafloyd.wordpress.ncsu.edu/), who gave me a chance to explore this design methodology in Spring 2021.
 Special thanks to Bharadwaj Padmanabhan for helping in testbench creation and providing the relevant images. I would also like to thank Gayathri Nair for helping me to generate the LUT for GPDK90. (For testing out the testbench on her own setup.)
 
 ## Installation
@@ -126,6 +127,12 @@ pip install /path/to/your/local/git/repo
 - [Usage Demo Jupyter Notebook](./docs/notebooks/usage_demo.ipynb)
 - [Design Demo Jupyter Notebook](./docs/notebooks/design_demo.ipynb)
 
+A question I am asked often is that will I be providing a script to show an actual simple circuit design?
+Short answer as of now **No**.
+
+The long answer is that I am currently hesitant (and have been since the beginning I learnt this methodology) to do this.
+The reason is that the temptation to just try out scripts without understanding is "human". (Yes I am humanizing script kiddies). How do I know? I was one of the script kiddies! I used the scripts from [this book by Prof. Murmann](https://www.cambridge.org/us/academic/subjects/engineering/circuits-and-systems/systematic-design-analog-cmos-circuits-using-pre-computed-lookup-tables?format=AR) without observing the tradeoffs for myself and directly using "optimization" scripts which is okay for simple designs but a recipe for disaster in actual designs. Hence my current recommendation is following point number 1 in additional resources section. Or atleast until I change my mind to share some 'scripts'
+
 ## Testing and Packaging (For Developer use)
 
 ```python
@@ -142,7 +149,7 @@ python setup.py sdist bdist_wheel # run this command after any updates to make s
 1. [Systematic Design of Analog CMOS Circuits: Using Pre-Computed Lookup Tables by P.G.A. Jespers and B. Murmann, Cambridge University Press, 2017](https://www.cambridge.org/us/academic/subjects/engineering/circuits-and-systems/systematic-design-analog-cmos-circuits-using-pre-computed-lookup-tables?format=AR). This book started it all for me. It serves as a good starting point. Following ar some suggestions.
    1. If you don't understand chapter 2 that is okay. But brave through it. Get an overview.
    2. Chapter 1 and 3 are the most critical and spend some time on it. It is okay if you don't follow along with MATLAB scripts. Understand the principles.
-   3. It is okay if the scripts in the book seems overkill to you. I personally feel they are. They try to solve it as a global optimization problem and personally, turned analog design into  scripting for me (which I hated). Hence, I felt the need to create a slightly different version of it for myself. The key intent is to create your own version for yourself. I feel the book introduces the idea of using Lookup Tables and that gm_id methodology is just an example of doing so.
+   3. It is okay if the scripts in the book seems overkill to you. I personally feel they are. They try to solve it as a global optimization problem and personally, turned analog design into scripting for me (which I hated). Hence, I felt the need to create a slightly different version of it for myself. The key intent is to create your own version for yourself. I feel the book introduces the idea of using Lookup Tables and that gm_id methodology is just an example of doing so.
    4. The key summary is use lookup table and whatever independent variable you wish to use (gm_id, vov, id_w, inversion coefficient, blah blah)
 2. Are you new to Python? No worries.
    1. Firstly, to get the correct environment setup you need Anaconda/Miniconda and Jupyterlab. [Basics of Python: Part 1 - Introduction](https://youtu.be/FggJNXN68fs?si=Uk--zh4XFII4AwPv)
