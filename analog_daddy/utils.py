@@ -37,7 +37,7 @@ def describe_structure(d):
     else:
         return type(d).__name__
 
-def look_upW(transistor,length_increment=10e-9):
+def look_upW(transistor,length_increment=10e-9,ds=None):
     """
     Look up the value of a device width for the
     given gm_id, length, and id.
@@ -58,43 +58,66 @@ def look_upW(transistor,length_increment=10e-9):
     is required in strong inversion cases where
     we won't increase the width anyway.
     """
-    w_calc = transistor['id']/look_up(transistor['type'],
-                                      'id_w', gm_id=transistor['gm_id'],
-                                      length=transistor['length'])
-    while (w_calc < W_MIN) and (transistor['length'] < L_MAX):
-        print(f"""A gm_id of {transistor['gm_id']} cannot be achieved for the length:
-              {transistor['length']} and id: {transistor['id']}. Increasing the length.""")
-        if IS_INTEGER:
-            transistor['length'] += 1
-        else:
-            transistor['length'] += length_increment
+    if ds is None:
         w_calc = transistor['id']/look_up(transistor['type'],
                                         'id_w', gm_id=transistor['gm_id'],
                                         length=transistor['length'])
+        while (w_calc < W_MIN) and (transistor['length'] < L_MAX):
+            print(f"""A gm_id of {transistor['gm_id']} cannot be achieved for the length:
+                {transistor['length']} and id: {transistor['id']}. Increasing the length.""")
+            if IS_INTEGER:
+                transistor['length'] += 1
+            else:
+                transistor['length'] += length_increment
+            w_calc = transistor['id']/look_up(transistor['type'],
+                                            'id_w', gm_id=transistor['gm_id'],
+                                            length=transistor['length'])
 
-    transistor['w'] = round(w_calc) if IS_INTEGER else w_calc
-    if transistor['length'] >= L_MAX:
-        print(f"""The length has reached the maximum length of {L_MAX} for a gm_id of
-              {transistor['gm_id']} and id of {transistor['id']}.""")
-        return False
-    return True
+        transistor['w'] = round(w_calc) if IS_INTEGER else w_calc
+        if transistor['length'] >= L_MAX:
+            print(f"""The length has reached the maximum length of {L_MAX} for a gm_id of
+                {transistor['gm_id']} and id of {transistor['id']}.""")
+            return False
+        return True
+    else:
+        w_calc = transistor['id']/look_up(transistor['type'],
+                                        'id_w', gm_id=transistor['gm_id'],
+                                        length=transistor['length'], ds=ds)
+        while (w_calc < W_MIN) and (transistor['length'] < L_MAX):
+            print(f"""A gm_id of {transistor['gm_id']} cannot be achieved for the length:
+                {transistor['length']} and id: {transistor['id']}. Increasing the length.""")
+            if IS_INTEGER:
+                transistor['length'] += 1
+            else:
+                transistor['length'] += length_increment
+            w_calc = transistor['id']/look_up(transistor['type'],
+                                            'id_w', gm_id=transistor['gm_id'],
+                                            length=transistor['length'], ds=ds)
+
+        transistor['w'] = round(w_calc) if IS_INTEGER else w_calc
+        if transistor['length'] >= L_MAX:
+            print(f"""The length has reached the maximum length of {L_MAX} for a gm_id of
+                {transistor['gm_id']} and id of {transistor['id']}.""")
+            return False
+        return True
+
 
 def print_transistor(transistor_dict):
     """Print the transistor dictionary in a nice format."""
-    print("\n-----------------------------------\n")
+    print("-----------------------------------")
     for key in transistor_dict.keys():
         if key == "type":
             print("Type: Refer dictionary.")
         else:
             print(f"""{key}:{transistor_dict[key]}""")
-    print("\n-----------------------------------\n")
+    print("-----------------------------------\n")
 
 def print_circuit(circuit_dict):
     """Print the circuit dictionary in a nice format."""
-    print("\n----------BEGIN--------------------\n")
+    print("----------BEGIN--------------------")
     for key in circuit_dict.keys():
         print_transistor(circuit_dict[key])
-    print("\n------------END--------------------\n")
+    print("------------END--------------------")
 
 def look_upW_circuit(circuit_dict,length_increment=10e-9):
     """Look up widths for the entire circuit."""
