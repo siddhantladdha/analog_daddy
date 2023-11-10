@@ -1,8 +1,9 @@
 # Files generated during testing.
 drafts.ipynb
 docs/notebooks/design.ipynb
-docs/notebooks/dashboard.ipynb
 docs/notebooks/drafts.ipynb
+docs/notebooks/calculator.ipynb
+docs/dashboard/*
 ignored_folder/*
 tox.ini
 

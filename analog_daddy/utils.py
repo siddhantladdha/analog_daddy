@@ -37,14 +37,14 @@ def describe_structure(d):
     else:
         return type(d).__name__
 
-def look_upW(transistor,length_increment=10e-9,ds=None):
+def look_upW(transistor,lut_root,length_increment=10e-9,ds=None):
     """
     Look up the value of a device width for the
     given gm_id, length, and id.
     Modify the transistor dictionary in place.
     The transistor dictionary should have the following
     transistor = {
-        'type': nmos, # actual dictionary of the device LUT
+        'type': "nmos_vth", # the key of device type within the device LUT dictionary.
         'length': L_MIN, # starting value of the length
         'w': W_MIN, # does not matter, will be overwritten
         "id": 10e-6, # current value to look up the width for.
@@ -59,7 +59,7 @@ def look_upW(transistor,length_increment=10e-9,ds=None):
     we won't increase the width anyway.
     """
     if ds is None:
-        w_calc = transistor['id']/look_up(transistor['type'],
+        w_calc = transistor['id']/look_up(lut_root[transistor['type']],
                                         'id_w', gm_id=transistor['gm_id'],
                                         length=transistor['length'])
         while (w_calc < W_MIN) and (transistor['length'] < L_MAX):
@@ -69,7 +69,7 @@ def look_upW(transistor,length_increment=10e-9,ds=None):
                 transistor['length'] += 1
             else:
                 transistor['length'] += length_increment
-            w_calc = transistor['id']/look_up(transistor['type'],
+            w_calc = transistor['id']/look_up(lut_root[transistor['type']],
                                             'id_w', gm_id=transistor['gm_id'],
                                             length=transistor['length'])
 
@@ -80,7 +80,7 @@ def look_upW(transistor,length_increment=10e-9,ds=None):
             return False
         return True
     else:
-        w_calc = transistor['id']/look_up(transistor['type'],
+        w_calc = transistor['id']/look_up(lut_root[transistor['type']],
                                         'id_w', gm_id=transistor['gm_id'],
                                         length=transistor['length'], ds=ds)
         while (w_calc < W_MIN) and (transistor['length'] < L_MAX):
@@ -90,7 +90,7 @@ def look_upW(transistor,length_increment=10e-9,ds=None):
                 transistor['length'] += 1
             else:
                 transistor['length'] += length_increment
-            w_calc = transistor['id']/look_up(transistor['type'],
+            w_calc = transistor['id']/look_up(lut_root[transistor['type']],
                                             'id_w', gm_id=transistor['gm_id'],
                                             length=transistor['length'], ds=ds)
 
@@ -106,10 +106,7 @@ def print_transistor(transistor_dict):
     """Print the transistor dictionary in a nice format."""
     print("-----------------------------------")
     for key in transistor_dict.keys():
-        if key == "type":
-            print("Type: Refer dictionary.")
-        else:
-            print(f"""{key}:{transistor_dict[key]}""")
+        print(f"""{key}:{transistor_dict[key]}""")
     print("-----------------------------------\n")
 
 def print_circuit(circuit_dict):
@@ -119,10 +116,12 @@ def print_circuit(circuit_dict):
         print_transistor(circuit_dict[key])
     print("------------END--------------------")
 
-def look_upW_circuit(circuit_dict,length_increment=10e-9):
+def look_upW_circuit(circuit_dict,lut_root,length_increment=10e-9):
     """Look up widths for the entire circuit."""
+    if IS_INTEGER:
+        length_increment = 1
     for key in circuit_dict.keys():
-        if look_upW(circuit_dict[key],length_increment=length_increment):
+        if look_upW(circuit_dict[key],lut_root,length_increment=length_increment):
             return True
         else:
             return False

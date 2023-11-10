@@ -125,7 +125,7 @@ pip install /path/to/your/local/git/repo
 - [Testbench Setup Instructions](./docs/notebooks/testbench_setup.ipynb)
 - [Import Demo Jupyter Notebook](./docs/notebooks/import_demo.ipynb)
 - [Usage Demo Jupyter Notebook](./docs/notebooks/usage_demo.ipynb)
-- [Design Demo Jupyter Notebook](./docs/notebooks/design_demo.ipynb)
+- [Common Plots for gm_id based design Jupyter Notebook](./docs/notebooks/design_demo.ipynb)
 
 A question I am asked often is that will I be providing a script to show an actual simple circuit design?
 Short answer as of now **No**.
