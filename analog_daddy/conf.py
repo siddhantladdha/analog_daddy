@@ -7,7 +7,7 @@ as follows:
 from analog_daddy.write_config import write_config
 write_config()
 '''
-# This file was generated on 05/11/2023 06:33:22 Zone: EST by write_config.py
+# This file was generated on 10/11/2023 19:54:43 Zone: EST by write_config.py
 # DON'T YOU DARE EDIT THIS FILE MANUALLY.
 # Constants to avoid magic strings
 PARAMETER_TAG = "Parameters:"
@@ -31,7 +31,7 @@ IS_INTEGER = False
 # Length Range
 L_MIN = 4.5e-08
 L_MAX = 1e-05
-
+LENGTH_INCREMENT = 1e-08
 # Width Range (Per-Finger)
 W_MIN = 9e-08
 W_MAX = 0.001

@@ -68,10 +68,11 @@ def write_config(config_path):
         'IS_INTEGER': False,
         'L_MIN': 1e-06,
         'L_MAX': 2e-06,
+        'LENGTH_INCREMENT': 10e-9,
         'W_MIN': 320e-09,
         'W_MAX': 10e-06,
         'VOLTAGE_STEP_SIZE': 20e-03,
-        'IMPORTER_VERBOSE': True
+        'IMPORTER_VERBOSE': True,
     }
 
     # Gather inputs using the default values
@@ -96,8 +97,12 @@ def write_config(config_path):
                                       default_values['L_MIN'], min_val=1, max_val=5)
         l_max = prompt_natural_number("Enter the value for L_MAX. Must be greater than L_MIN",
                                       default_values['L_MAX'], min_val=1, max_val=100)
+        length_increment = prompt_natural_number("Enter the value for LENGTH_INCREMENT between 1 to 5",
+                                      1, min_val=1, max_val=5)
         w_min = prompt_natural_number("Enter the value for W_MIN",
                                       default_values['W_MIN'], min_val=1, max_val=5)
+        w_max = prompt_natural_number("Enter the value for W_MAX. Must be greater than W_MIN",
+                                      default_values['W_MAX'], min_val=1, max_val=100)
         w_max = prompt_natural_number("Enter the value for W_MAX. Must be greater than W_MIN",
                                       default_values['W_MAX'], min_val=1, max_val=100)
     else:
@@ -105,6 +110,8 @@ def write_config(config_path):
                             default_values['L_MIN'], min_val=1e-15, max_val=1e-3)
         l_max = prompt_float("Enter the value for L_MAX. Must be greater than L_MIN",
                             default_values['L_MAX'], min_val=1e-15, max_val=1e-3)
+        length_increment = prompt_float("Enter the value for LENGTH_INCREMENT between 10nm to 100nm",
+                                      default_values['LENGTH_INCREMENT'], min_val=1e-9, max_val=100e-9)
         w_min = prompt_float("Enter the value for W_MIN",
                             default_values['W_MIN'], min_val=1e-15, max_val=1e-3)
         w_max = prompt_float("Enter the value for W_MAX. Must be greater than W_MIN",
@@ -150,7 +157,7 @@ IS_INTEGER = {is_integer}
 # Length Range
 L_MIN = {l_min}
 L_MAX = {l_max}
-
+LENGTH_INCREMENT = {length_increment}
 # Width Range (Per-Finger)
 W_MIN = {w_min}
 W_MAX = {w_max}
