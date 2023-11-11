@@ -4,12 +4,13 @@
 
 This library shows Analog Design who the daddy is. Well, it's just *an attempt to make transistor sizing less painful*.
 Additionally, it includes certain scripts and tools to make any aspect of Analog Design a little less painful.
-Analog Design requires practice, intuition and experience. It isn't easy to design power and area efficient
-circuits for a given specification that works across PVT (process, voltage and temperature) corners and for them to work in real silicon.
+Analog Design requires practice, intuition and experience. It isn't easy to design, power and area efficient
+circuits for a given specification that are functional across PVT corners (process, voltage and temperature corners)
+and for the functionality to closely correlate with real silicon data.
 It is 'hard' and requires time.
 
 However, as far as the transistor sizing for a given DC operating point goes, with ever evolving models,
-and second, third order effects, sqauare-law based pen and paper calculations to actual design convergence
+, second and third order effects, square-law based pen and paper calculations to actual design convergence
 have become more painful and sometimes require more iterations.
 The lookup table based design methodology tries to find a middle ground.
 You can read more about it in
@@ -20,7 +21,7 @@ You can read more about it in
 The [Gm/Id starter kit by Prof. Boris Murmann et al.](https://github.com/bmurmann/Book-on-gm-ID-design)
 is an excellent tool to get comfortable with gm/id methodology and use Lookup tables in general with whatever
 design methodology you like. Thus, this kit could serve as an advanced calculator. The kit
-is excellently written, but it is written in Matlab using which sucks, but the gist is that if this tool/methodology
+is excellently written, but it is written in Matlab (and MATLAB sucks), but the gist is that if this tool/methodology
 is going to be learned by new Analog Design engineers like me and taught in many other institutes, I would want them to use
 Python in this fun venture. Additionally, my experience with interactive plotting capabilities of MATLAB has been subpar.
 
@@ -67,14 +68,13 @@ The following are the key features in order of priority of them being implemente
 
 - [x] Thoroughly document the process of setting up custom Testbench (Cadence Virtuoso) and Expression setup in (Cadence Assembler).
 - [x] Thoroughly documented code. (Tried my best to ask ChatGPT to document it.)
+- [ ] Support for `lookupVGS` and corresponding test suite.
 - [ ] Packaging
-  - [ ] `pip`.
+  - [x] `pip`.
   - [ ] Deployment on [pypi](https://pypi.org/)
   - [ ] `conda-forge`
 - [x] Test suite for basic functions, so that upgrading libraries and dependency is easier.
-- [ ] Support lazy loading of the database file to improve speed and efficiency. Not sure if it is needed right now.
-- [x] Support all the lookup modes
-- [ ] Support for `lookupVGS` and corresponding test suite.
+- [x] Support lazy loading of the database file to improve speed and efficiency. I think using numpy already is the most efficient way to deal with this data.
 - [x] Give templates for basic and interactive plotting using Plotly/Dash. See the [notebooks directory](./docs/notebooks)
 - [x] Have basic plots and a template `.npy` file for ~[Skywater-130 nm PDK](https://github.com/google/skywater-pdk)~ ~GPDK~
       FreePDK45 for illustration and design purposes. I will not be using Skywater-130 nm PDK since a there is no version of
@@ -186,8 +186,10 @@ python -m unittest discover tests
 ```
 
 ```bash
-python setup.py sdist bdist_wheel # run this command after any updates to make sure package is build correctly.
-pip freeze > requirements.txt  # incase you add or remove any dependencies.
+# run this command after any updates to make sure package is build correctly.
+python setup.py sdist bdist_wheel
+# incase you add or remove any dependencies.
+pip freeze > requirements.txt
 ```
 
 ## Additional Resources
