@@ -179,6 +179,16 @@ from [this book by Prof. Murmann](https://www.cambridge.org/us/academic/subjects
 designs but a recipe for disaster in actual designs. Hence my current recommendation is following the first
 point in additional resources section. Or atleast until I change my mind to share some 'scripts'
 
+### Sample plots
+
+![$I_{d} vs V_{gs} plot$](./docs/images/usage_demo/id_vs_vgs.svg)
+
+![$I_{d} vs V_{ds} plot$ (Non-LaTeX formatting)](./docs/images/usage_demo/id_vs_vds.svg)
+
+![$I_{d} vs V_{gs} plot for different V_{ds}$](./docs/images/usage_demo/id_vs_vgs_vds_param.svg)
+
+![$I_{d} vs V_{ds} plot for different V_{gs}$](./docs/images/usage_demo/id_vs_vds_vgs_param.svg)
+
 ## Testing and Packaging (For Developer use)
 
 ```python
