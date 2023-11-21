@@ -248,15 +248,14 @@ def populate_data_values(combined_lines: list, param_lines: list, x: dict, y: di
             #  Check if it's a parameter line
             if line in param_lines:
                 current_parameters = extract_parameters_from_comment(line)
-            # else it's a data line.
-            else:
-                key, value = line
                 ds_index = x[DS_KEY].index(parse_value(current_parameters[DS_KEY]))
                 gs_index = x[GS_KEY].index(parse_value(current_parameters[GS_KEY]))
                 length_index = x[LENGTH_KEY].index(parse_value(current_parameters[LENGTH_KEY]))
                 sb_index = x[SB_KEY].index(parse_value(current_parameters[SB_KEY]))
-
-                y[key][ds_index][gs_index][length_index][sb_index] = parse_value(value)
+            # else it's a data line.
+            else:
+                key, value = line
+                y[key][ds_index][gs_index][length_index][sb_index] = float(value)
         except Exception as e:
             if 'value' in locals():
                 raise ValueError(f"Error processing line {line} with value {value}: {e}")
