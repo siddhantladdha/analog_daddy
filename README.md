@@ -71,8 +71,7 @@ The following are the key features in order of priority of them being implemente
 - [ ] Support for `lookupVGS` and corresponding test suite.
 - [ ] Packaging
   - [x] `pip`.
-  - [ ] Deployment on [pypi](https://pypi.org/)
-  - [ ] `conda-forge`
+  - [x] ~Deployment on [pypi](https://pypi.org/) and `conda-forge`~. Needed?
 - [x] Test suite for basic functions, so that upgrading libraries and dependency is easier.
 - [x] Support lazy loading of the database file to improve speed and efficiency. I think using numpy already is the most efficient way to deal with this data.
 - [x] Give templates for basic and interactive plotting using Plotly/Dash. See the [notebooks directory](./docs/notebooks)
@@ -167,7 +166,7 @@ pip install /path/to/your/local/git/repo
 - [Testbench Setup Instructions](./docs/notebooks/testbench_setup.ipynb)
 - [Import Demo Jupyter Notebook](./docs/notebooks/import_demo.ipynb)
 - [Usage Demo Jupyter Notebook](./docs/notebooks/usage_demo.ipynb)
-- [Common Plots for gm_id based design Jupyter Notebook](./docs/notebooks/design_demo.ipynb)
+- [Common Plots for gm_id based design Jupyter Notebook](./docs/notebooks/common_plots_gmid.ipynb)
 
 A question I am asked often is that will I be providing a script to show an actual simple circuit design?
 Short answer as of now **No**.
