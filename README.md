@@ -69,8 +69,8 @@ The following are the key features in order of priority of them being implemente
 - [x] Thoroughly document the process of setting up custom Testbench (Cadence Virtuoso) and Expression setup in (Cadence Assembler).
 - [x] Thoroughly documented code. (Tried my best to ask ChatGPT to document it.)
 - [ ] Support for `lookupVGS` and corresponding test suite.
-- [ ] Packaging
-  - [x] `pip`.
+- [x] Packaging
+  - [x] `pip` installable.
   - [x] ~Deployment on [pypi](https://pypi.org/) and `conda-forge`~. Needed?
 - [x] Test suite for basic functions, so that upgrading libraries and dependency is easier.
 - [x] Support lazy loading of the database file to improve speed and efficiency. I think using numpy already is the most efficient way to deal with this data.
