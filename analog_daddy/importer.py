@@ -255,7 +255,17 @@ def populate_data_values(combined_lines: list, param_lines: list, x: dict, y: di
             # else it's a data line.
             else:
                 key, value = line
-                y[key][ds_index][gs_index][length_index][sb_index] = float(value)
+                try:
+                    y[key][ds_index][gs_index][length_index][sb_index] = float(value)
+                except ValueError:
+                    # added to save it as a special values instead of
+                    # just doing nothing.
+                    if IMPORTER_VERBOSE:
+                        print(f"""You got a problem at {ds_index},
+                              {gs_index}, {length_index}, {sb_index}
+                              Search for 123456789 in the final dict.""")
+                    y[key][ds_index][gs_index][length_index][sb_index] = 123456789
+
         except Exception as e:
             if 'value' in locals():
                 raise ValueError(f"Error processing line {line} with value {value}: {e}")

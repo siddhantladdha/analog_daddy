@@ -58,6 +58,7 @@ class TestNestPopulatedDictionary(unittest.TestCase):
 
 class TestImporter(unittest.TestCase):
     maxDiff = None
+
     def test_populate_data_values(self):
         combined_lines = [
             ['Parameters:', 'ds=0, gs=0, length=1u, sb=0'],
@@ -101,6 +102,53 @@ class TestImporter(unittest.TestCase):
             'gm_pmos_svt': [[[[0.0, 0.0]]]],
             'gmb_pmos_svt': [[[[0.0, 0.0]]]],
             'gds_pmos_svt': [[[[175.1e-12, 57.54e-12]]]],
+            'id_pmos_svt': [[[[0.0, -156.9e-18]]]]
+        }
+        self.assertEqual(y, expected_output)
+
+    def test_populate_data_values_empty_values(self):
+        combined_lines = [
+            ['Parameters:', 'ds=0, gs=0, length=1u, sb=0'],
+            ['cgg_nmos_svt', '53.26e-15'],
+            ['gm_nmos_svt', '0'],
+            ['gmb_nmos_svt', '0'],
+            ['gds_nmos_svt', ''],
+            ['id_nmos_svt', '-0'],
+            ['cgg_pmos_svt', '82.63e-15'],
+            ['gm_pmos_svt', '0'],
+            ['gmb_pmos_svt', '0'],
+            ['gds_pmos_svt', ''],
+            ['id_pmos_svt', '-0'],
+            ['Parameters:', 'ds=0, gs=0, length=1u, sb=250m'],
+            ['cgg_nmos_svt', '45.83e-15'],
+            ['gm_nmos_svt', '0'],
+            ['gmb_nmos_svt', '0'],
+            ['gds_nmos_svt', '1.381e-9'],
+            ['id_nmos_svt', '91.14e-18'],
+            ['cgg_pmos_svt', '71.65e-15'],
+            ['gm_pmos_svt', '0'],
+            ['gmb_pmos_svt', '0'],
+            ['gds_pmos_svt', '57.54e-12'],
+            ['id_pmos_svt', '-156.9e-18']
+        ]
+
+        param_lines, data_lines = separate_lines(combined_lines)
+
+        x = process_parameters(param_lines)
+        y = create_data_structure(data_lines, x)
+
+        populate_data_values(combined_lines, param_lines, x, y)
+
+        expected_output = {
+            'cgg_nmos_svt': [[[[53.26e-15, 45.83e-15]]]],
+            'gm_nmos_svt': [[[[0.0, 0.0]]]],
+            'gmb_nmos_svt': [[[[0.0, 0.0]]]],
+            'gds_nmos_svt': [[[[123456789, 1.381e-9]]]],
+            'id_nmos_svt': [[[[0.0, 91.14e-18]]]],
+            'cgg_pmos_svt': [[[[82.63e-15, 71.65e-15]]]],
+            'gm_pmos_svt': [[[[0.0, 0.0]]]],
+            'gmb_pmos_svt': [[[[0.0, 0.0]]]],
+            'gds_pmos_svt': [[[[123456789, 57.54e-12]]]],
             'id_pmos_svt': [[[[0.0, -156.9e-18]]]]
         }
         self.assertEqual(y, expected_output)
