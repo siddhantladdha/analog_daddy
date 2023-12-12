@@ -125,3 +125,74 @@ def look_upW_circuit(circuit_dict,lut_root,length_increment=10e-9):
             return True
         else:
             return False
+
+def write_expr_csv(filename, test_name_str, instance_name_str, circuit):
+    """
+    Writes expressions to a CSV file.
+    We are not using CSV writer function and instead
+    prefer to manually write the CSV file since
+    CSV writer confirms to standard CSV formatting
+    convention and escapes "
+    We don't want additional " escapes since it is required
+    in expressions to be imported by maestro.
+
+    :param filename: The name of the CSV file to write to.
+    :param test_name_str: A string representing the test name.
+    :param instance_name_str: A string representing the instance name.
+    :param circuit: A dictionary representing the circuit data.
+    """
+    header_row = ["Test", "Name", "Type", "Output", "EvalType", "Plot", "Save", "Spec"]
+
+    with open(filename, 'w', newline='', encoding='utf-8') as file:
+        # Write the header manually
+        file.write(','.join(header_row) + '\n')
+
+        for device in circuit.keys():
+            # This dictionary has core expressions.
+            expr_dict = {
+                "gm": f'OP("/{instance_name_str}/{device}" "gm")',
+                "id": f'abs(OP("/{instance_name_str}/{device}" "id"))',
+                "gds": f'OP("/{instance_name_str}/{device}" "gds")',
+                "ro": f'(1/OP("/{instance_name_str}/{device}" "gds"))',
+                "cgg": f'OP("/{instance_name_str}/{device}" "cgg")',
+                "vth": f'abs(OP("/{instance_name_str}/{device}" "vth"))',
+                "vds": f'abs(OP("/{instance_name_str}/{device}" "vds"))',
+                "vgs": f'abs(OP("/{instance_name_str}/{device}" "vgs"))',
+                "vdsat": f'abs(OP("/{instance_name_str}/{device}" "vdsat"))',
+                "vdsat_margin": (
+                    f'abs(OP("/{instance_name_str}/{device}" "vds")) - '
+                    f'abs(OP("/{instance_name_str}/{device}" "vdsat"))'
+                ),
+                "veff": (
+                    f'abs(OP("/{instance_name_str}/{device}" "vgs")) - '
+                    f'abs(OP("/{instance_name_str}/{device}" "vth"))'
+                ),
+                "gm_id": (
+                    f'OP("/{instance_name_str}/{device}" "gm") / '
+                    f'abs(OP("/{instance_name_str}/{device}" "id"))'
+                ),
+                "gds_id": (
+                    f'OP("/{instance_name_str}/{device}" "gds") / '
+                    f'abs(OP("/{instance_name_str}/{device}" "id"))'
+                ),
+                "gm_gds": (
+                    f'OP("/{instance_name_str}/{device}" "gm") / '
+                    f'OP("/{instance_name_str}/{device}" "gds")'
+                ),
+            }
+
+            for key,value in expr_dict.items():
+                row = [
+                    test_name_str,  # "Test"
+                    f"{key}_{instance_name_str}_{device}",  # "Name"
+                    "expr",  # "Type"
+                    value,  # "Output"
+                    "point",  # "EvalType"
+                    "t",  # "Plot"
+                    "",  # "Save"
+                    ""   # "Spec"
+                ]
+                # Write the row manually
+                file.write(','.join(row) + '\n')
+
+    print(f"Data written to {filename}")
