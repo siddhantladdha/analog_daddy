@@ -71,7 +71,7 @@ The following are the key features in order of priority of them being implemente
 - [ ] Support for `lookupVGS` and corresponding test suite.
 - [x] Packaging
   - [x] `pip` installable.
-  - [x] ~Deployment on [pypi](https://pypi.org/) and `conda-forge`~. Needed?
+  - [x] Deployment on [pypi](https://pypi.org/project/analog-daddy/) and `conda-forge`.
 - [x] Test suite for basic functions, so that upgrading libraries and dependency is easier.
 - [x] Support lazy loading of the database file to improve speed and efficiency. I think using numpy already is the most efficient way to deal with this data.
 - [x] Give templates for basic and interactive plotting using Plotly/Dash. See the [notebooks directory](./docs/notebooks)
@@ -80,6 +80,9 @@ The following are the key features in order of priority of them being implemente
       PDK available to setup with Cadence for free. Instead, a derived data and plot of FreePDK45 will be shared here.
       The `GPDK45.npy` file will be slowly phased out from the test suite since it is useless with the smaller data points.
       However, its existence does not violate any licensing restrictions since this is derived data and and has smaller data points.
+- [ ] Interactive Web browser based dashboards.
+  - [ ] Basic plotting functionality.
+  - [ ] Diff mode where you are able to compare different devices and key params of those devices.
 
 ## Acknowledgements and Licensing
 
@@ -117,26 +120,28 @@ Then we use [conda-forge](https://conda-forge.org/)
 
 ```bash
 # create a test_env with the required configuration.
-conda create --name test_env python=3.10 jupyterlab scipy numpy matplotlib dash pandas
+conda create --name test_env python=3.13.5
 conda config --add channels conda-forge
 conda config --set channel_priority strict
 conda activate test_env
 ```
 
-Now you can install the package using the following.
+Now you can install the package using either the recommended method from conda-forge or pip (if you know what you are doing).
 
 ```bash
-# for online installation
-pip install git+ssh://git@github.com/siddhantladdha/analog_daddy.git
+# for recommended (online) installation using conda-forge.
+conda install -c conda-forge analog-daddy
 ```
 
-To upgrade to the latest version you need to uninstall and re-install using the
-following.
-[Source](https://stackoverflow.com/questions/71356330/updating-pip-installed-package-from-git)
+```bash
+# for online installation using pip.
+pip install analog-daddy
+```
+
+To upgrade to the latest version run
 
 ```bash
-pip uninstall analog_daddy
-pip install git+ssh://git@github.com/siddhantladdha/analog_daddy.git
+pip install --upgrade analog-daddy
 ```
 
 ### Offline installation for devices without internet access
@@ -190,15 +195,24 @@ point in additional resources section. Or atleast until I change my mind to shar
 
 ## Testing and Packaging (For Developer use)
 
+Create the environment same as production and install the library.
+
 ```python
+# additional install of development packages
+pip install .[dev]
+```
+
+```python
+# Testing
 python -m unittest discover tests
 ```
 
+If you made changes to any dependencies (add/remove/version change) make sure to change `install_requires` section in `setup.cfg`
+
 ```bash
 # run this command after any updates to make sure package is build correctly.
-python setup.py sdist bdist_wheel
-# incase you add or remove any dependencies.
-pip freeze > requirements.txt
+# run this from the project root directory. (where tests/ docs/ etc are present)
+python -m build
 ```
 
 ## Additional Resources
