@@ -197,22 +197,26 @@ point in additional resources section. Or atleast until I change my mind to shar
 
 Create the environment same as production and install the library.
 
-```python
+```bash
 # additional install of development packages
 pip install .[dev]
 ```
 
-```python
+```bash
 # Testing
 python -m unittest discover tests
 ```
 
-If you made changes to any dependencies (add/remove/version change) make sure to change `install_requires` section in `setup.cfg`
+If you made changes to any dependencies (add/remove/version change) make sure to change `install_requires` section in `setup.cfg`.
 
 ```bash
 # run this command after any updates to make sure package is build correctly.
 # run this from the project root directory. (where tests/ docs/ etc are present)
 python -m build
+```
+
+```bash
+python -m twine upload dist/*
 ```
 
 ## Additional Resources
