@@ -1,0 +1,64 @@
+:root {
+  --dracula-background: #282a36;
+  --dracula-current-line: #44475a;
+  --dracula-foreground: #f8f8f2;
+  --dracula-comment: #6272a4;
+  --dracula-cyan: #8be9fd;
+  --dracula-green: #50fa7b;
+  --dracula-orange: #ffb86c;
+  --dracula-pink: #ff79c6;
+  --dracula-purple: #bd93f9;
+  --dracula-red: #ff5555;
+  --dracula-yellow: #f1fa8c;
+}
+
+body {
+  background: var(--dracula-background);
+  color: var(--dracula-foreground);
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--dracula-pink);
+}
+
+a {
+  color: var(--dracula-cyan);
+}
+
+a:hover {
+  color: var(--dracula-orange);
+}
+
+.button, button {
+  background: var(--dracula-purple);
+  color: var(--dracula-foreground);
+  border: none;
+  border-radius: 4px;
+  padding: 0.5em 1em;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.button:hover, button:hover {
+  background: var(--dracula-pink);
+}
+
+input, textarea, select {
+  background: var(--dracula-current-line);
+  color: var(--dracula-foreground);
+  border: 1px solid var(--dracula-comment);
+  border-radius: 4px;
+  padding: 0.5em;
+}
+
+::-webkit-scrollbar {
+  background: var(--dracula-background);
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--dracula-current-line);
+  border-radius: 4px;
+}
+
+/* Add more custom styles as needed using the variables above */
