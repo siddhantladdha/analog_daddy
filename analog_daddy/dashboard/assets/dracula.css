@@ -10,6 +10,7 @@
   --dracula-purple: #bd93f9;
   --dracula-red: #ff5555;
   --dracula-yellow: #f1fa8c;
+  --accent-color: var(--dracula-pink);
   /* Bootstrap Dracula overrides */
   --bs-body-bg: var(--dracula-background);
   --bs-body-color: var(--dracula-foreground);
@@ -30,7 +31,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  color: var(--dracula-pink);
+  color: var(--accent-color);
 }
 
 a {
@@ -94,9 +95,22 @@ input, textarea, select {
 
 /* Avoid overriding layout, icon, or close button styles */
 
-.table, .table th, .table td, .table thead th {
+.table, .table td {
   color: var(--dracula-foreground) !important;
   background: var(--dracula-background) !important;
+}
+
+/* Table headers use accent color, fixed value cells use cyan */
+.table th, .table thead th{
+  background: var(--dracula-background) !important;
+  color: var(--accent-color) !important;
+  font-weight: bold;
+}
+
+.table td.fixed, td.fixed {
+  background: var(--dracula-background) !important;
+  color: var(--dracula-cyan) !important;
+  font-weight: bold;
 }
 
 /* Table cells: single line, ellipsis, and max-width for responsive fit */
@@ -164,4 +178,9 @@ input, textarea, select {
 /* Also ensure parent cell does not hide overflow */
 #lut-details-table td {
   overflow: visible !important;
+}
+
+/* Add padding to all table header and cell elements */
+.table th, .table td, th, td {
+  padding: 0.75em 1.25em !important;
 }

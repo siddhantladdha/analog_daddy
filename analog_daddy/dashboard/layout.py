@@ -60,7 +60,7 @@ layout = dbc.Container([
                     ),
                     html.Tbody([
                         html.Tr([
-                            html.Td("Device Type"),
+                            html.Td("Device Type", className="fixed"),
                             html.Td(
                                 dcc.Dropdown(
                                     id='device-dropdown',
@@ -72,9 +72,18 @@ layout = dbc.Container([
                                 )
                             )
                         ]),
-                        html.Tr([html.Td("Temperature"), html.Td(id='lut-temp-cell')]),
-                        html.Tr([html.Td("Corner"), html.Td(id='lut-corner-cell')]),
-                        html.Tr([html.Td("Info."), html.Td(id='lut-info-cell')]),
+                        html.Tr([
+                            html.Td("Temperature", className="fixed"),
+                            html.Td(id='lut-temp-cell')
+                        ]),
+                        html.Tr([
+                            html.Td("Corner", className="fixed"),
+                            html.Td(id='lut-corner-cell')
+                        ]),
+                        html.Tr([
+                            html.Td("Info.", className="fixed"),
+                            html.Td(id='lut-info-cell')
+                        ]),
                     ])
                 ],
                 bordered=True,
