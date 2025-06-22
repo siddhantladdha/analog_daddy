@@ -10,6 +10,17 @@
   --dracula-purple: #bd93f9;
   --dracula-red: #ff5555;
   --dracula-yellow: #f1fa8c;
+  /* Bootstrap Dracula overrides */
+  --bs-body-bg: var(--dracula-background);
+  --bs-body-color: var(--dracula-foreground);
+  --bs-primary: var(--dracula-purple);
+  --bs-secondary: var(--dracula-comment);
+  --bs-success: var(--dracula-green);
+  --bs-danger: var(--dracula-red);
+  --bs-warning: var(--dracula-yellow);
+  --bs-info: var(--dracula-cyan);
+  --bs-light: var(--dracula-foreground);
+  --bs-dark: var(--dracula-current-line);
 }
 
 body {
@@ -61,4 +72,24 @@ input, textarea, select {
   border-radius: 4px;
 }
 
-/* Add more custom styles as needed using the variables above */
+/* Dracula theme for DBC Toast (safe overrides) */
+.dash-bootstrap .toast,
+.dash-bootstrap .toast-header {
+  background: var(--dracula-current-line) !important;
+  color: var(--dracula-foreground) !important;
+  border-color: var(--dracula-purple) !important;
+}
+
+.toast {
+  --bs-toast-bg: var(--dracula-background);
+  --bs-toast-color: var(--dracula-foreground);
+  --bs-toast-header-bg: var(--dracula-current-line);
+  --bs-toast-header-color: var(--dracula-foreground);
+  --bs-toast-border-color: var(--dracula-comment);
+}
+
+.toast-header .text-success {
+  color: var(--dracula-green) !important;
+}
+
+/* Avoid overriding layout, icon, or close button styles */
