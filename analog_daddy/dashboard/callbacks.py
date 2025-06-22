@@ -16,6 +16,7 @@ def register_callbacks():
     This function attaches all necessary callbacks to the Dash app instance.
     """
     @app.callback(
+        Output('lut-header-col2', 'children'),
         Output('lut-toast', 'is_open'),
         Output('lut-toast', 'children'),
         Output('device-dropdown', 'options'),
@@ -28,17 +29,21 @@ def register_callbacks():
     )
     def handle_lut_upload(filenames, contents):
         """
-        Handle LUT upload, update toast, device dropdown, and LUT details table cells.
+        Handle LUT upload, update toast, device dropdown, LUT details table cells, and header.
         """
         from .load_lut import load_lut_from_file, get_device_keys, get_lut_details
         import base64
         import tempfile
         if not filenames or not contents:
-            raise PreventUpdate
+            return (
+                "LUT Filename",  # default header
+                False, None, [], None, "-", "-", "-"
+            )
         if isinstance(filenames, str):
             filenames = [filenames]
             contents = [contents]
         # Only handle the first LUT for now (single column)
+        lut_filename = os.path.basename(filenames[0])
         header, b64data = contents[0].split(',')
         with tempfile.NamedTemporaryFile(delete=False, suffix='.npy') as tmp:
             tmp.write(base64.b64decode(b64data))
@@ -55,6 +60,7 @@ def register_callbacks():
             html.Ul(items, style={"marginBottom": 0})
         ])
         return (
+            lut_filename,
             True,
             filenames_display,
             dropdown_options,

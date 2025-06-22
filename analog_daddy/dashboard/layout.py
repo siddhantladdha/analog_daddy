@@ -55,7 +55,7 @@ layout = dbc.Container([
                     html.Thead(
                         html.Tr([
                             html.Th("LUT Details"),
-                            html.Th("LUT 1"),
+                            html.Th(id='lut-header-col2', children="LUT Filename"),
                         ])
                     ),
                     html.Tbody([
