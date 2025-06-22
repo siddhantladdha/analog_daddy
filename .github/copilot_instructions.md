@@ -23,6 +23,7 @@ This file documents project-specific conventions and best practices for using Gi
 - All custom CSS (e.g., Dracula theme) should be placed in `analog_daddy/dashboard/assets/` and use CSS variables for easy theming.
 - Segment code into logical modules/files for maintainability.
 - All new dashboard features should be added incrementally, with each step tested and committed separately.
+- Do not use inline style properties for theming (e.g., color, background, font) in Dash layout files. All theming and color should be handled in CSS in the assets directory. Use inline styles only for layout/spacing or dynamic runtime changes.
 
 ## Testing
 

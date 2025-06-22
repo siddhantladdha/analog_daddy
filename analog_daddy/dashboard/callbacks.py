@@ -18,27 +18,60 @@ def register_callbacks():
     @app.callback(
         Output('lut-toast', 'is_open'),
         Output('lut-toast', 'children'),
+        Output('device-dropdown', 'options'),
+        Output('device-dropdown', 'value'),
+        Output('lut-temp-cell', 'children'),
+        Output('lut-corner-cell', 'children'),
+        Output('lut-info-cell', 'children'),
         Input('lut-upload', 'filename'),
+        Input('lut-upload', 'contents'),
     )
-    def show_lut_toast(filenames):
+    def handle_lut_upload(filenames, contents):
         """
-        Show a toast notification listing all uploaded LUT filenames.
-
-        Args:
-            filenames (str or list): The uploaded LUT filename(s).
-
-        Returns:
-            tuple: (is_open, toast content as a bulleted list)
+        Handle LUT upload, update toast, device dropdown, and LUT details table cells.
         """
-        if not filenames:
+        from .load_lut import load_lut_from_file, get_device_keys, get_lut_details
+        import base64
+        import tempfile
+        if not filenames or not contents:
             raise PreventUpdate
-        # Support both single and multiple file uploads
         if isinstance(filenames, str):
             filenames = [filenames]
-        # Show all uploaded filenames as a bulleted list using Dash html components
+            contents = [contents]
+        # Only handle the first LUT for now (single column)
+        header, b64data = contents[0].split(',')
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.npy') as tmp:
+            tmp.write(base64.b64decode(b64data))
+            tmp.flush()
+            lut = load_lut_from_file(tmp.name)
+        device_keys = get_device_keys(lut)
+        details = get_lut_details(lut)
+        dropdown_options = [{'label': k, 'value': k} for k in device_keys]
+        dropdown_value = device_keys[0] if device_keys else None
+        # Toast
         items = [html.Li(os.path.basename(f)) for f in filenames]
         filenames_display = html.Div([
             "Loaded:",
             html.Ul(items, style={"marginBottom": 0})
         ])
-        return True, filenames_display
+        return (
+            True,
+            filenames_display,
+            dropdown_options,
+            dropdown_value,
+            details.get('temperature', '-'),
+            details.get('corner', '-'),
+            details.get('info', '-')
+        )
+
+    @app.callback(
+        Output('debug-text', 'children'),
+        Input('device-dropdown', 'value'),
+    )
+    def update_debug_text(selected_device):
+        """
+        Update the debug text to show the currently selected device.
+        """
+        if selected_device:
+            return f"[DEBUG] Selected device: {selected_device}"
+        return "[DEBUG] No device selected."

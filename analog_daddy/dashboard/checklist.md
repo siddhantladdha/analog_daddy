@@ -14,9 +14,9 @@ This checklist tracks all requested and discussed features for the Analog Daddy 
 
 ### LUT Import
 
-- [ ] Import the LUT (drag and drop) or select from file picker.
-- [ ] Ability to import multiple LUT.
-- [ ] Toast notification for 2s showing import complete.
+- [x] Import the LUT (drag and drop) or select from file picker.
+- [x] Ability to import multiple LUT.
+- [x] Toast notification for 2s showing import complete.
 - [ ] Display LUT details (info, temperature, corner) in a neat table.
 - [ ] Device selection drop downs.
 - [ ] For multiple LUT's expand the display LUT details table.

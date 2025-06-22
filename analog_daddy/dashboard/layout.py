@@ -49,6 +49,44 @@ layout = dbc.Container([
                 }
             ),
             html.Div(id='lut-upload-output'),
+            # LUT details table with device dropdown in the second column of the first row
+            dbc.Table(
+                [
+                    html.Thead(
+                        html.Tr([
+                            html.Th("LUT Details"),
+                            html.Th("LUT 1"),
+                        ])
+                    ),
+                    html.Tbody([
+                        html.Tr([
+                            html.Td("Device Type"),
+                            html.Td(
+                                dcc.Dropdown(
+                                    id='device-dropdown',
+                                    options=[],
+                                    value=None,
+                                    clearable=False,
+                                    placeholder='Select device',
+                                    style={'maxWidth': '400px'}
+                                )
+                            )
+                        ]),
+                        html.Tr([html.Td("Temperature"), html.Td(id='lut-temp-cell')]),
+                        html.Tr([html.Td("Corner"), html.Td(id='lut-corner-cell')]),
+                        html.Tr([html.Td("Info."), html.Td(id='lut-info-cell')]),
+                    ])
+                ],
+                bordered=True,
+                hover=True,
+                responsive=True,
+                id='lut-details-table',
+                style={
+                    'marginTop': '1em'
+                },
+            ),
+            # Debug text for development (shows selected device)
+            html.Div(id='debug-text', style={'marginTop': '1em', 'color': '#ffb86c', 'fontFamily': 'monospace', 'width': '100%', 'wordBreak': 'break-word'}),
         ], width=12)
     ]),
 ], fluid=True)

@@ -93,3 +93,75 @@ input, textarea, select {
 }
 
 /* Avoid overriding layout, icon, or close button styles */
+
+.table, .table th, .table td, .table thead th {
+  color: var(--dracula-foreground) !important;
+  background: var(--dracula-background) !important;
+}
+
+/* Table cells: single line, ellipsis, and max-width for responsive fit */
+.table, .table th, .table td {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 220px;
+}
+#lut-details-table {
+  width: auto !important;
+  max-width: 800px !important;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Responsive table columns and cell wrapping */
+.table, .table th, .table td {
+  white-space: normal !important;
+  word-break: break-word !important;
+  min-width: 0;
+}
+
+/* Dracula theme for Dash dcc.Dropdown (react-select) */
+.Select-control, .Select-menu-outer, .Select-menu, .Select-option, .Select-placeholder, .Select-value, .Select-input {
+  background: var(--dracula-current-line) !important;
+  color: var(--dracula-foreground) !important;
+  border-color: var(--dracula-comment) !important;
+}
+/* Highlight selected dropdown option with Dracula orange */
+.Select-option.is-selected, .Select-option.is-focused, .Select__option--is-selected, .Select__option--is-focused {
+  background-color: var(--dracula-orange) !important;
+  color: var(--dracula-foreground) !important;
+}
+.Select-arrow-zone, .Select-arrow {
+  color: var(--dracula-foreground) !important;
+}
+.Select-clear-zone {
+  color: var(--dracula-comment) !important;
+}
+.Select-menu-outer {
+  border-radius: 4px !important;
+  box-shadow: 0 2px 8px var(--dracula-background) !important;
+}
+
+/* Ensure dropdown menus appear above table cells */
+.Select-menu-outer, .Select-menu {
+  z-index: 9999 !important;
+}
+
+/* For dbc.DropdownMenu if used in table */
+.dcc-dropdown, .dbc-dropdown-menu {
+  z-index: 1051 !important;
+}
+
+/* Force dropdown input and selected value text to Dracula foreground */
+.Select-control, .Select-menu-outer, .Select-menu, .Select-option, .Select-placeholder, .Select-value, .Select-input input, .Select-value-label {
+  color: var(--dracula-foreground) !important;
+  background: var(--dracula-current-line) !important;
+}
+.Select-input input {
+  color: var(--dracula-foreground) !important;
+}
+
+/* Also ensure parent cell does not hide overflow */
+#lut-details-table td {
+  overflow: visible !important;
+}
