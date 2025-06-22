@@ -95,7 +95,7 @@ layout = dbc.Container([
                 },
             ),
             # Debug text for development (shows selected device)
-            html.Div(id='debug-text', style={'marginTop': '1em', 'color': '#ffb86c', 'fontFamily': 'monospace', 'width': '100%', 'wordBreak': 'break-word'}),
+            html.Div(id='debug-text', style={'marginTop': '1em', 'color': '#ffb86c', 'fontFamily': 'monospace', 'width': '100%', 'wordBreak': 'break-word', 'fontSize': '2em'}),
         ], width=12)
     ]),
 ], fluid=True)

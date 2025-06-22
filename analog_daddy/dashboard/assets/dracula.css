@@ -89,6 +89,10 @@ input, textarea, select {
   --bs-toast-border-color: var(--dracula-comment);
 }
 
+.toast, .toast-body, .toast-header {
+  font-size: 2rem;
+}
+
 .toast-header .text-success {
   color: var(--dracula-green) !important;
 }
