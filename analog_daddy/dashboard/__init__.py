@@ -1,1 +1,3 @@
-# Dashboard package for analog_daddy
+"""
+Dashboard package for the Analog Daddy dashboard.
+"""
