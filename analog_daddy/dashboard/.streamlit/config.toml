@@ -1,0 +1,127 @@
+# config.toml
+
+# [dracula]
+# bg = "#282a36"
+# current_line = "#44475a"
+# foreground = "#f8f8f2"
+# comment = "#6272a4"
+# cyan = "#8be9fd"
+# green = "#50fa7b"
+# orange = "#ffb86c"
+# pink = "#ff79c6"
+# purple = "#bd93f9"
+# red = "#ff5555"
+# yellow = "#f1fa8c"
+
+[theme]
+
+# The preset Streamlit theme that your custom theme inherits from.
+# This can be one of the following: "light" or "dark".
+base = "dark"
+
+# Primary accent color.
+primaryColor = "#ff79c6"
+
+# Background color of the app.
+backgroundColor = "#282a36"
+
+# Background color used for most interactive widgets.
+secondaryBackgroundColor = "#44475a"
+
+# Color used for almost all text.
+textColor = "#f8f8f2"
+
+# Color used for all links.
+linkColor = "#8be9fd"
+
+# Background color used for code blocks.
+codeBackgroundColor = "#282a36"
+
+# The font family for all text, except code blocks.
+font = "monospace, sans-serifm serif"
+
+# The font family to use for code (monospace) in the sidebar.
+codefont = "monospace, sans-serifm serif"
+
+# Sets the font size (in pixels or rem) for code blocks and code text.
+# This applies to `st.code`, `st.json`, and `st.help`.
+# It does not apply to inline code, which is set by default to 0.75em.
+# When unset, the code font size will be 0.875rem.
+# codeFontSize =
+
+# The font family to use for headings.
+# This can be one of the following:
+# - "sans-serif"
+# - "serif"
+# - "monospace"
+# - The `family` value for a custom font table under [[theme.fontFaces]]
+# - A comma-separated list of these (as a single string) to specify
+#   fallbacks
+# If no heading font is set, Streamlit uses `theme.font` for headings.
+# headingFont =
+
+# An array of fonts to use in your app.
+# Each font in the array is a table (dictionary) that can have the
+# following attributes, closely resembling CSS font-face definitions:
+# - family
+# - url
+# - weight (optional)
+# - style (optional)
+# - unicodeRange (optional)
+# To host a font with your app, enable static file serving with
+# `server.enableStaticServing=true`.
+# You can define multiple [[theme.fontFaces]] tables, including multiple
+# tables with the same family if your font is defined by multiple files.
+# For example, a font hosted with your app may have a [[theme.fontFaces]]
+# table as follows:
+# [[theme.fontFaces]]
+# family = "font_name"
+# url = "app/static/font_file.woff"
+# weight = "400"
+# style = "normal"
+# fontFaces =
+
+# The radius used as basis for the corners of most UI elements.
+# This can be one of the following:
+# - "none"
+# - "small"
+# - "medium"
+# - "large"
+# - "full"
+# - The number in pixels or rem.
+# For example, you can use "10px", "0.5rem", or "2rem". To follow best
+# practices, use rem instead of pixels when specifying a numeric size.
+# baseRadius =
+
+# The radius used as basis for the corners of buttons.
+# This can be one of the following:
+# - "none"
+# - "small"
+# - "medium"
+# - "large"
+# - "full"
+# - The number in pixels or rem.
+# For example, you can use "10px", "0.5rem", or "2rem". To follow best
+# practices, use rem instead of pixels when specifying a numeric size.
+# If no button radius is set, Streamlit uses `theme.baseRadius` instead.
+# buttonRadius =
+
+# The color of the border around elements.
+borderColor = "#bd93f9"
+
+# The color of the border around dataframes and tables.
+# If no dataframe border color is set, Streamlit uses `theme.borderColor`
+# instead.
+# dataframeBorderColor =
+
+# Whether to show a border around input widgets.
+# showWidgetBorder =
+
+# Sets the root font size (in pixels) for the app.
+# This determines the overall scale of text and UI elements.
+# # When unset, the font size will be 16px.
+# baseFontSize =
+
+# Whether to show a vertical separator between the sidebar and the main
+# content area.
+# showSidebarBorder =
