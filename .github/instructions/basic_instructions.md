@@ -1,9 +1,12 @@
 ---
 applyTo: '**'
 ---
-Coding standards, domain knowledge, and preferences that AI should follow.
 
-This file documents project-specific conventions and best practices for using GitHub Copilot and other AI coding assistants in this workspace.
+# Instructions
+
+Coding standards, domain knowledge, and preferences that AI should follow.
+This file documents project-specific conventions and best practices for using
+GitHub Copilot and other AI coding assistants in this workspace.
 Please read and follow these guidelines to ensure consistency and maintainability.
 
 ## General Project Practices
