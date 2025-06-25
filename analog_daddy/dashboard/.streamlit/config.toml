@@ -125,3 +125,8 @@ borderColor = "#bd93f9"
 # Whether to show a vertical separator between the sidebar and the main
 # content area.
 # showSidebarBorder =
+
+[server]
+
+# Max size, in megabytes, for files uploaded with the file_uploader.
+maxUploadSize = 1000
