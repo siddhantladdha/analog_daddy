@@ -1,7 +1,8 @@
+from collections import defaultdict
+import textwrap
 import streamlit as st
 import numpy as np
-import pandas as pd
-import textwrap
+from analog_daddy.look_up import look_up
 
 st.title("Analog Daddy Dashboard")
 
@@ -154,6 +155,7 @@ for i, var1 in enumerate(parameters_list[0]["dependent_vars"]):
     ratio_vars.append(f"{var1}/w")
 dependent_var_options = parameters_list[0]["dependent_vars"] + ratio_vars
 
+
 # --- Mutually Exclusive Selection for Independent Vars using st.multiselect ---
 if not parameters_list : # Check if parameters_list is empty
     st.error("No parameters available. Please select a device type first.")
@@ -181,3 +183,96 @@ if selected_dependent_var and selected_independent_var:
 
 st.write(f"""- Independent variable: {selected_independent_var}\n
 - Dependent Variable: {selected_dependent_var}""")
+
+# endregion
+# create input fields for start:step:stop.
+# Assume 'selected' is your list of selected independent variables from st.multiselect
+if selected_independent_var:
+    for var in selected_independent_var:
+        st.markdown(f"**Range for {var}:**")
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            start = st.number_input(f"{var} start", key=f"{var}_start")
+        with col2:
+            stop = st.number_input(f"{var} stop", key=f"{var}_stop")
+        with col3:
+            step = st.number_input(f"{var} step", key=f"{var}_step", min_value=0.0001, format="%.4f")
+
+# Build nested min/max dict for independent variables and gm/id arrays
+independent_var_minmax = defaultdict(lambda: defaultdict(lambda: defaultdict(dict)))
+
+for lut_number, lut in enumerate(lut_roots):
+    for device in lut_metadata[lut_number]["Device Type"]:
+        device_data_dict = lut.get(device, {})
+        for key, value in device_data_dict.items():
+            if isinstance(value, np.ndarray):
+                if (value.ndim == 1 and value.size > 1):
+                    independent_var_minmax[lut_number][device][key]["min"] = float(np.min(value))
+                    independent_var_minmax[lut_number][device][key]["max"] = float(np.max(value))
+                    independent_var_minmax[lut_number][device][key]["step"] = float(value[1] - value[0])
+                elif (value.ndim == 4 and key in ['gm', 'id']):
+                    if key == 'gm':
+                        independent_var_minmax[lut_number][device]["gm/id"]["min"] = None
+                        independent_var_minmax[lut_number][device]["gm/id"]["max"] = None
+                        independent_var_minmax[lut_number][device]["gm/id"]["step"] = None
+                    elif key == 'id':
+                        independent_var_minmax[lut_number][device]["id/w"]["min"] = None
+                        independent_var_minmax[lut_number][device]["id/w"]["max"] = None
+                        independent_var_minmax[lut_number][device]["id/w"]["step"] = None
+
+
+independent_var_minmax = {
+                            k: {
+                                dk: dict(dv)
+                                for dk, dv in v.items()
+                                }
+                            for k, v in independent_var_minmax.items()
+                        }
+
+for lut_number, lut in enumerate(lut_roots):
+    for device in lut_metadata[lut_number]["Device Type"]:
+        device_data_dict = lut.get(device, {})
+        # Add min/max for gm/id and id/w using look_up function
+        gm_id = look_up(
+            device_data_dict,
+            'gm_id',
+            length=float(np.min(device_data_dict["length"])),
+            gs=np.arange(
+                independent_var_minmax[lut_number][device]["gs"]["min"],
+                independent_var_minmax[lut_number][device]["gs"]["max"],
+                independent_var_minmax[lut_number][device]["gs"]["step"]
+                ),
+            ds=independent_var_minmax[lut_number][device]["ds"]["max"],
+            sb=independent_var_minmax[lut_number][device]["sb"]["min"]
+            )
+        id_w = look_up(
+            device_data_dict,
+            'id_w',
+            length=float(np.min(device_data_dict["length"])),
+            gs=np.arange(
+                independent_var_minmax[lut_number][device]["gs"]["min"],
+                independent_var_minmax[lut_number][device]["gs"]["max"],
+                independent_var_minmax[lut_number][device]["gs"]["step"]
+                ),
+            ds=independent_var_minmax[lut_number][device]["ds"]["max"],
+            sb=independent_var_minmax[lut_number][device]["sb"]["min"]
+            )
+        independent_var_minmax[lut_number][device]["gm/id"]["max"] = float(np.max(gm_id))
+        independent_var_minmax[lut_number][device]["gm/id"]["min"] = float(np.min(gm_id))
+        independent_var_minmax[lut_number][device]["gm/id"]["step"] = 0.5
+        independent_var_minmax[lut_number][device]["id/w"]["max"] = float(np.max(id_w))
+        independent_var_minmax[lut_number][device]["id/w"]["min"] = float(np.min(id_w))
+        # Logarithmic step size for id/w
+        id_w_logspace = np.logspace(np.log10(
+            independent_var_minmax[lut_number][device]["id/w"]["min"]),
+            independent_var_minmax[lut_number][device]["id/w"]["max"],
+            100
+            )
+        # Multiplicative step size
+        independent_var_minmax[lut_number][device]["id/w"]["step"] = (
+            id_w_logspace[1] / id_w_logspace[0]
+        )
+
+# Convert to regular dict if needed
+
+independent_var_minmax
