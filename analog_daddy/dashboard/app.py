@@ -3,6 +3,7 @@ import textwrap
 import streamlit as st
 import numpy as np
 from analog_daddy.look_up import look_up
+from parse_si import format_si_or_scientific as fmt_str_si
 
 st.title("Analog Daddy Dashboard")
 
@@ -185,19 +186,6 @@ st.write(f"""- Independent variable: {selected_independent_var}\n
 - Dependent Variable: {selected_dependent_var}""")
 
 # endregion
-# create input fields for start:step:stop.
-# Assume 'selected' is your list of selected independent variables from st.multiselect
-if selected_independent_var:
-    for var in selected_independent_var:
-        st.markdown(f"**Range for {var}:**")
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            start = st.number_input(f"{var} start", key=f"{var}_start")
-        with col2:
-            stop = st.number_input(f"{var} stop", key=f"{var}_stop")
-        with col3:
-            step = st.number_input(f"{var} step", key=f"{var}_step", min_value=0.0001, format="%.4f")
-
 # Build nested min/max dict for independent variables and gm/id arrays
 independent_var_minmax = defaultdict(lambda: defaultdict(lambda: defaultdict(dict)))
 
@@ -273,6 +261,34 @@ for lut_number, lut in enumerate(lut_roots):
             id_w_logspace[1] / id_w_logspace[0]
         )
 
-# Convert to regular dict if needed
+var_default = { }
+# create input fields for start:step:stop.
+# Assume 'selected' is your list of selected independent variables from st.multiselect
+if selected_independent_var:
+    for var in selected_independent_var:
 
-independent_var_minmax
+        # check if the independent variables min/max are the same for both LUTs
+        if len(parameters_list) == 2:
+            for elem in ["min", "max"]:
+                if independent_var_minmax[0][st.session_state.get("selected_device_type_0")][var][elem] != independent_var_minmax[1][st.session_state.get("selected_device_type_1")][var][elem]:
+                    st.warning(f"Independent variable {var} {elem} value does not match between two LUTs for given device type. Smaller of the two will be used.")
+                    var_default[elem] = min(
+                        abs(independent_var_minmax[0][st.session_state.get("selected_device_type_0")][var][elem]),
+                        abs(independent_var_minmax[1][st.session_state.get("selected_device_type_1")][var][elem])
+                    )
+                else:
+                    var_default[elem] = independent_var_minmax[0][st.session_state.get("selected_device_type_0")][var][elem]
+        else:
+            # If only one LUT is selected, use its values directly
+            var_default["min"] = independent_var_minmax[0][st.session_state.get("selected_device_type_0")][var]["min"]
+            var_default["max"] = independent_var_minmax[0][st.session_state.get("selected_device_type_0")][var]["max"]
+
+        st.markdown(f"**Range for {var}:**")
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            start = st.text_input(f"{var} start", key=f"{var}_start", value=fmt_str_si(var_default["min"]))
+        with col2:
+            stop = st.text_input(f"{var} stop", key=f"{var}_stop", value=fmt_str_si(var_default["max"]))
+        with col3:
+            # we don't bother comparing step size between two LUTs, just use the first one
+            step = st.text_input(f"{var} step", key=f"{var}_step", value=fmt_str_si(independent_var_minmax[0][st.session_state.get("selected_device_type_0")][var]["step"]))
