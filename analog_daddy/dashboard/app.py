@@ -111,3 +111,34 @@ for row_idx, row_value in enumerate(table):
 
 # region Variable Selection and Display
 st.markdown("## Variable Selection and Display")
+
+parameters_list = []
+
+for i, lut in enumerate(lut_roots):
+    selected_device_type = st.session_state.get(f"selected_device_type_{i}")
+    if not selected_device_type:
+        continue
+    device_lut = lut.get(selected_device_type, {})
+    dependent_vars = []
+    independent_vars = []
+    for key, value in device_lut.items():
+        if isinstance(value, np.ndarray):
+            if value.ndim == 4:
+                dependent_vars.append(key)
+            elif value.ndim == 1 and value.size > 1:
+                independent_vars.append((key, value))
+    parameters_list.append({
+        "selected_device_type": selected_device_type,
+        "dependent_vars": dependent_vars,
+        "independent_vars": [k for k, _ in independent_vars]
+    })
+
+if len(parameters_list) == 2: # Only compare if two LUTs are selected
+    if set(parameters_list[0]["dependent_vars"]) != set(parameters_list[1]["dependent_vars"]):
+        st.error("Dependent variables does not match between two LUT's")
+        st.stop()
+    if set(parameters_list[0]["independent_vars"]) != set(parameters_list[1]["independent_vars"]):
+        st.error("Independent variables does not match between two LUT's")
+        st.stop()
+
+parameters_list
