@@ -1,6 +1,7 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
+import textwrap
 
 st.title("Analog Daddy Dashboard")
 
@@ -140,5 +141,43 @@ if len(parameters_list) == 2: # Only compare if two LUTs are selected
     if set(parameters_list[0]["independent_vars"]) != set(parameters_list[1]["independent_vars"]):
         st.error("Independent variables does not match between two LUT's")
         st.stop()
+# Adding important design variables to the independent_vars list
+design_vars = ["gm/id", "id/w"]
+for param in parameters_list:
+    param["independent_vars"].extend(design_vars)
+# Adding ratios to the dependent_vars list
+ratio_vars = []
+for i, var1 in enumerate(parameters_list[0]["dependent_vars"]):
+    for j, var2 in enumerate(parameters_list[0]["dependent_vars"]):
+        if i != j:
+            ratio_vars.append(f"{var1}/{var2}")
+    ratio_vars.append(f"{var1}/w")
+dependent_var_options = parameters_list[0]["dependent_vars"] + ratio_vars
 
-parameters_list
+# --- Mutually Exclusive Selection for Independent Vars using st.multiselect ---
+if not parameters_list : # Check if parameters_list is empty
+    st.error("No parameters available. Please select a device type first.")
+    st.stop()
+if len(independent_vars) <= 1:
+    st.error("Independent variables dimensions not correct. Check LUT format.")
+    st.stop()
+
+selected_independent_var = st.multiselect(
+    textwrap.dedent("""\
+                    **Independent variables**\n
+                    Choose upto two variables.\n
+                    The **first** option is used as the **x-axis**.\n
+                    The **second** option is used for the **parametric axis**."""),
+    parameters_list[0]["independent_vars"],
+    default=None,
+    max_selections=2
+)
+selected_dependent_var = st.selectbox("**Dependent variable**", dependent_var_options, index=None)
+
+if selected_dependent_var and selected_independent_var:
+    if selected_dependent_var in selected_independent_var:
+        st.error("Dependent variable cannot be an independent variable. Please select a different variable.")
+        st.stop()
+
+st.write(f"""- Independent variable: {selected_independent_var}\n
+- Dependent Variable: {selected_dependent_var}""")
