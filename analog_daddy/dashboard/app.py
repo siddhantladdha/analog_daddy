@@ -1,69 +1,31 @@
-from collections import defaultdict
-import textwrap
 import streamlit as st
-import numpy as np
 from analog_daddy.look_up import look_up
 from parse_si import format_si_or_scientific as fmt_str_si
+from data_loader import load_lut_files
+import numpy as np
+from collections import defaultdict
+import textwrap
 
 st.title("Analog Daddy Dashboard")
 
-# region File Uploading Logic
-
-# Drag and drop file uploader for up to two numpy files only, with session persistence
+# File Uploading Logic (modularized)
 st.markdown("#### Drag and Drop up to Two NumPy (.npy) Files Below:")
+lut_roots, status_msgs = load_lut_files()
 
-if 'uploaded_files' not in st.session_state:
-    st.session_state.uploaded_files = []
-if 'lut_roots' not in st.session_state:
-    st.session_state.lut_roots = []
-
-uploaded_files = st.file_uploader(
-    "Choose up to 2 .npy files", type=["npy"], accept_multiple_files=True, key="npy_uploader"
-)
-
-# Update session state only if new files are uploaded
-if uploaded_files:
-    if len(uploaded_files) > 2:
-        st.error("Please upload no more than two .npy files.")
+for msg in status_msgs:
+    if msg.startswith("Uploaded file") or msg.startswith("(Session) File"):
+        st.success(msg)
+    elif msg.startswith("Please upload"):
+        st.error(msg)
+    elif msg.startswith("Failed to load"):
+        st.error(msg)
     else:
-        st.session_state.uploaded_files = uploaded_files
-        st.session_state.lut_roots = []
-        for file in uploaded_files:
-            st.success(f"Uploaded file: {file.name}")
-            try:
-                lut_root = np.load(file, allow_pickle=True).item()
-                st.session_state.lut_roots.append(lut_root)
-            except EOFError as e:
-                st.error(f"Failed to load {file.name}: {e}. "
-                         "The session has been refreshed. Please re-upload the files.")
-            except ValueError as e:
-                st.error(f"Failed to load {file.name}: {e}")
-            except Exception as e:
-                st.error(f"Failed to load {file.name}: {e}")
-            del file
-elif st.session_state.uploaded_files:
-    st.session_state.lut_roots = []
-    for file in st.session_state.uploaded_files:
-        st.info(f"(Session) File: {file.name}")
-        try:
-            lut_root = np.load(file, allow_pickle=True).item()
-            st.session_state.lut_roots.append(lut_root)
-        except EOFError as e:
-            st.error(f"Failed to load {file.name}: {e}. "
-                    "The session has been refreshed. Please re-upload the files.")
-        except ValueError as e:
-            st.error(f"Failed to load {file.name}: {e}")
-        except Exception as e:
-            st.error(f"Failed to load {file.name}: {e}")
-        del file
-# endregion File Uploading Logic
-
-lut_roots = st.session_state.lut_roots
+        st.info(msg)
 
 # region LUT Metadata Table
 headers = ["Device Type", "Temperature/Corner", "Info"]
 # Only process device_metadata if both lists are not empty
-if st.session_state.lut_roots:
+if lut_roots:
     device_types = [
         [k for k, v in lut.items() if isinstance(v, dict)]
         for lut in lut_roots
@@ -72,11 +34,11 @@ if st.session_state.lut_roots:
     lut_metadata = [
         {
             "Device Type":          device_types[i],
-            "Temperature/Corner":   f"{st.session_state.lut_roots[i].get('temperature')}°C : "
-                                    f"{st.session_state.lut_roots[i].get('corner')}",
-            "Info":                 st.session_state.lut_roots[i].get('info')
+            "Temperature/Corner":   f"{lut_roots[i].get('temperature')}°C : "
+                                    f"{lut_roots[i].get('corner')}",
+            "Info":                 lut_roots[i].get('info')
         }
-        for i in range(len(st.session_state.lut_roots))
+        for i in range(len(lut_roots))
     ]
 else:
     st.error("No LUT metadata available. Please upload valid .npy files.")
