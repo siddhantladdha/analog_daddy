@@ -6,10 +6,10 @@ for the Analog Daddy Streamlit dashboard. All file processing, session state man
 and error handling related to LUT files should be implemented here.
 """
 
-import streamlit as st
-import numpy as np
 from typing import List, Tuple, Any
 from io import BytesIO
+import streamlit as st
+import numpy as np
 
 @st.cache_data(show_spinner=False)
 def load_lut_from_bytes(file_bytes: bytes) -> Any:
@@ -38,7 +38,7 @@ def load_lut_files() -> Tuple[List[Any], List[str]]:
         st.session_state.lut_roots = []
 
     uploaded_files = st.file_uploader(
-        "Choose up to 2 .npy files", type=["npy"], accept_multiple_files=True, key="npy_uploader"
+        "Upload up to two numpy (*.npy*) files", type=["npy"], accept_multiple_files=True, key="npy_uploader"
     )
 
     if uploaded_files:
@@ -77,4 +77,6 @@ def load_lut_files() -> Tuple[List[Any], List[str]]:
             except Exception as e:
                 status_msgs.append(f"Failed to load {file.name}: {e}")
             del file
+    else:
+        status_msgs.append("No LUT uploaded. Please upload the LUT.")
     return lut_roots, status_msgs

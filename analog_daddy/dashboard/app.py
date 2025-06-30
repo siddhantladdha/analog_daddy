@@ -1,26 +1,62 @@
+from collections import defaultdict
+import io
+import contextlib
+import textwrap
 import streamlit as st
-from analog_daddy.look_up import look_up
+import numpy as np
 from parse_si import format_si_or_scientific as fmt_str_si
 from data_loader import load_lut_files
-import numpy as np
-from collections import defaultdict
-import textwrap
+from analog_daddy.utils import pretty_print_structure, describe_structure
+from analog_daddy.look_up import look_up
 
-st.title("Analog Daddy Dashboard")
+st.set_page_config(
+    page_title="Analog Daddy Dashboard",
+    page_icon="🧑‍🔬",
+    layout="centered"
+)
 
-# File Uploading Logic (modularized)
-st.markdown("#### Drag and Drop up to Two NumPy (.npy) Files Below:")
-lut_roots, status_msgs = load_lut_files()
+# Sidebar: Dashboard Controls
+st.sidebar.title("Sidebar")
 
+# File uploader in sidebar context
+with st.sidebar:
+    lut_roots, status_msgs = load_lut_files()
+
+# Advanced Preferences section in sidebar
+with st.sidebar.expander("Advanced Preferences", expanded=True):
+    mode = st.radio(
+        "Select Dashboard Mode:",
+        ("User Mode", "Debug Mode"),
+        index=1,  # 0 for "User Mode", 1 for "Debug Mode"
+        key="mode_selector"
+    )
+    st.session_state.debug_mode = (mode == "Debug Mode")
+
+st.title("Dashboard")
+
+# Show status messages in main area
 for msg in status_msgs:
     if msg.startswith("Uploaded file") or msg.startswith("(Session) File"):
         st.success(msg)
-    elif msg.startswith("Please upload"):
+    elif msg.startswith("Please upload no more"):
         st.error(msg)
     elif msg.startswith("Failed to load"):
         st.error(msg)
+    elif msg.startswith("No LUT uploaded"):
+        st.error(msg)
+        st.stop()
     else:
         st.info(msg)
+
+# Debug: LUT Root Structure
+if st.session_state.debug_mode:
+    with st.expander("DEBUG: LUT Root Structure", expanded=False):
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            for i, lut in enumerate(lut_roots):
+                print(f"LUT Root {i} structure:")
+                pretty_print_structure(describe_structure(lut))
+        st.code(buf.getvalue(), language="yaml")
 
 # region LUT Metadata Table
 headers = ["Device Type", "Temperature/Corner", "Info"]
@@ -40,9 +76,6 @@ if lut_roots:
         }
         for i in range(len(lut_roots))
     ]
-else:
-    st.error("No LUT metadata available. Please upload valid .npy files.")
-    st.stop()
 
 st.markdown("## LUT Metadata Table")
 
