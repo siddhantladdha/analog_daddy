@@ -18,14 +18,18 @@ lut_roots, status_msgs, lut_metadata = render_sidebar()
 st.title("Dashboard")
 
 # Show status messages in main area
+# This flow control with st.stop() ensures that if the LUT is not loaded
+# or if there are errors, the rest of the dashboard does not execute.
+# This is important to prevent errors in the rest of the dashboard
+# as try:catch is not used in the rest of the code.
 for msg in status_msgs:
     if msg.startswith("Uploaded file") or msg.startswith("(Session) File"):
         st.success(msg)
-    elif msg.startswith("Please upload no more"):
-        st.error(msg)
-    elif msg.startswith("Failed to load"):
-        st.error(msg)
-    elif msg.startswith("No LUT uploaded"):
+    elif (
+        msg.startswith("Please upload no more") or
+        msg.startswith("Failed to load") or
+        msg.startswith("No LUT uploaded")
+    ):
         st.error(msg)
         st.stop()
     else:
@@ -64,51 +68,41 @@ for row_idx, row_value in enumerate(table):
 
 # region Variable Selection and Display
 st.markdown("## Variable Selection and Display")
-try:
-    # --- Mutually Exclusive Selection for Independent Vars using st.multiselect ---
-    selected_independent_var = st.multiselect(
-        textwrap.dedent("""\
-                        **Independent variables**\n
-                        Choose upto two variables.\n
-                        The **first** option is used as the **x-axis**.\n
-                        The **second** option is used for the **parametric axis**."""),
-        # Use the first LUT's independent variables for the selectbox
-        # Check is anyway performed to make sure the independent variables
-        # are the same for both LUTs.
-        list(
-            lut_metadata[0]["independent_vars"][
-                st.session_state.get("selected_device_type_0")
-                ].keys()),
-        default=None,
-        key="selected_independent_var",
-        max_selections=2
-    )
+# --- Mutually Exclusive Selection for Independent Vars using st.multiselect ---
+selected_independent_var = st.multiselect(
+    textwrap.dedent("""\
+                    **Independent variables**\n
+                    Choose upto two variables.\n
+                    The **first** option is used as the **x-axis**.\n
+                    The **second** option is used for the **parametric axis**."""),
+    # Use the first LUT's independent variables for the selectbox
+    # Check is anyway performed to make sure the independent variables
+    # are the same for both LUTs.
+    list(
+        lut_metadata[0]["independent_vars"][
+            st.session_state.get("selected_device_type_0")
+            ].keys()),
+    default=None,
+    key="selected_independent_var",
+    max_selections=2
+)
 
-    selected_dependent_var = st.selectbox(
-                                        "**Dependent variable**",
-                                        lut_metadata[0]["dependent_vars"][
-                                        st.session_state.get("selected_device_type_0")],
-                                        index=None,
-                                        key="selected_dependent_var"
-                                        )
+selected_dependent_var = st.selectbox(
+                                    "**Dependent variable**",
+                                    lut_metadata[0]["dependent_vars"][
+                                    st.session_state.get("selected_device_type_0")],
+                                    index=None,
+                                    key="selected_dependent_var"
+                                    )
 
-    if selected_dependent_var and selected_independent_var:
-        if selected_dependent_var in selected_independent_var:
-            st.error(
-                (
-                "Dependent variable cannot be an independent variable. "
-                "Please select a different variable."
-                ))
-            st.stop()
-
-except IndexError:
-    # If no LUTs are uploaded, show an error message and stop execution.
-    # Safeguard required when the file is removed from the uploader,
-    # after the selectbox and other elements are created.
-    # Currently the created widgets cannot be removed,
-    # as streamlit does not support dynamic widget removal.
-    st.error("No LUT uploaded. Please upload a LUT file to continue.")
-    st.stop()
+if selected_dependent_var and selected_independent_var:
+    if selected_dependent_var in selected_independent_var:
+        st.error(
+            (
+            "Dependent variable cannot be an independent variable. "
+            "Please select a different variable."
+            ))
+        st.stop()
 # endregion
 
 var_default = { }
