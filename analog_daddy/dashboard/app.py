@@ -1,4 +1,3 @@
-from collections import defaultdict
 import io
 import contextlib
 import textwrap
@@ -127,24 +126,10 @@ try:
         max_selections=2
     )
 
-    # Use the first LUT's dependent variables for the selectbox
-    # Check is anyway performed to make sure the dependent variables
-    # are the same for both LUTs.
-    dependent_var_options = lut_metadata[0]["dependent_vars"][
-                            st.session_state.get("selected_device_type_0")]
-    dependent_var_ratios = []
-    # Create ratios of dependent variables
-    # Currently creating all possible ratios of dependent variables
-    # Eventually will try to trim this down to only ratios that make sense
-    for i in dependent_var_options:
-        dependent_var_ratios.append(f"{i}/w")
-        for j in dependent_var_options:
-            if i != j:
-                dependent_var_ratios.append(f"{i}/{j}")
-
     selected_dependent_var = st.selectbox(
                                         "**Dependent variable**",
-                                        dependent_var_options + dependent_var_ratios,
+                                        lut_metadata[0]["dependent_vars"][
+                                        st.session_state.get("selected_device_type_0")],
                                         index=None
                                         )
 
@@ -155,7 +140,9 @@ try:
                 lut_metadata[0]["independent_vars"][
                 st.session_state.get("selected_device_type_0")
                 ].keys()))
-            st.write(dependent_var_options + dependent_var_ratios)
+            st.write(
+                    lut_metadata[0]["dependent_vars"][
+                    st.session_state.get("selected_device_type_0")])
 
     if selected_dependent_var and selected_independent_var:
         if selected_dependent_var in selected_independent_var:
