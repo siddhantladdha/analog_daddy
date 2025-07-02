@@ -20,7 +20,7 @@ st.sidebar.title("Sidebar")
 
 # File uploader in sidebar context
 with st.sidebar:
-    lut_roots, status_msgs = load_lut_files()
+    lut_roots, status_msgs, lut_metadata = load_lut_files()
 
 # Advanced Preferences section in sidebar
 with st.sidebar.expander("Advanced Preferences", expanded=True):
@@ -57,6 +57,11 @@ if st.session_state.debug_mode:
                 print(f"LUT Root {i} structure:")
                 pretty_print_structure(describe_structure(lut))
         st.code(buf.getvalue(), language="yaml")
+
+# Debug: LUT Metadata Structure
+if st.session_state.debug_mode:
+    with st.expander("DEBUG: LUT Metadata Structure", expanded=False):
+        st.write(lut_metadata)
 
 # region LUT Metadata Table
 headers = ["Device Type", "Temperature/Corner", "Info"]
