@@ -31,6 +31,18 @@ with st.sidebar.expander("Advanced Preferences", expanded=True):
         key="mode_selector"
     )
     st.session_state.debug_mode = (mode == "Debug Mode")
+    x_var_step_mode = st.radio(
+        "Select Mode for Array creation for X-axis:",
+        ("Start:Stop:Step Mode", "Start:Stop:N-Elements Mode"),
+        index=0,  # 0 for "Start:Stop:Step Mode", 1 for "Start:Stop:N-Elements Mode"
+        key="var_step_mode_selector_0"
+    )
+    param_var_step_mode = st.radio(
+        "Select Mode for Array creation for Parametric axis:",
+        ("Start:Stop:Step Mode", "Start:Stop:N-Elements Mode"),
+        index=1,  # 0 for "Start:Stop:Step Mode", 1 for "Start:Stop:N-Elements Mode"
+        key="var_step_mode_selector_1"
+    )
 
 st.title("Dashboard")
 
@@ -63,28 +75,9 @@ if st.session_state.debug_mode:
     with st.expander("DEBUG: LUT Metadata Structure", expanded=False):
         st.write(lut_metadata)
 
-# region LUT Metadata Table
+# region Device Selection Table
 headers = ["Device Type", "Temperature/Corner", "Info"]
-# Only process device_metadata if both lists are not empty
-if lut_roots:
-    device_types = [
-        [k for k, v in lut.items() if isinstance(v, dict)]
-        for lut in lut_roots
-    ]
-
-    lut_metadata = [
-        {
-            "Device Type":          device_types[i],
-            "Temperature/Corner":   f"{lut_roots[i].get('temperature')}°C : "
-                                    f"{lut_roots[i].get('corner')}",
-            "Info":                 lut_roots[i].get('info')
-        }
-        for i in range(len(lut_roots))
-    ]
-
-st.markdown("## LUT Metadata Table")
-
-# lut_metadata is a list of dicts, one per row
+st.markdown("## Device Selection Table")
 
 # Prepare table: first row is headers, then the data rows
 table = [headers] + [
@@ -106,7 +99,8 @@ for row_idx, row_value in enumerate(table):
                     label="Lable_text",
                     options=lut_metadata[row_idx - 1]["Device Type"],
                     key=f"selected_device_type_{row_idx - 1}",
-                    label_visibility="collapsed"
+                    label_visibility="collapsed",
+                    index=0
                 )
             else:
                 column.write(cell)
@@ -114,181 +108,151 @@ for row_idx, row_value in enumerate(table):
 
 # region Variable Selection and Display
 st.markdown("## Variable Selection and Display")
+try:
+    # --- Mutually Exclusive Selection for Independent Vars using st.multiselect ---
+    selected_independent_var = st.multiselect(
+        textwrap.dedent("""\
+                        **Independent variables**\n
+                        Choose upto two variables.\n
+                        The **first** option is used as the **x-axis**.\n
+                        The **second** option is used for the **parametric axis**."""),
+        # Use the first LUT's independent variables for the selectbox
+        # Check is anyway performed to make sure the independent variables
+        # are the same for both LUTs.
+        list(
+            lut_metadata[0]["independent_vars"][
+                st.session_state.get("selected_device_type_0")
+                ].keys()),
+        default=None,
+        max_selections=2
+    )
 
-parameters_list = []
+    # Use the first LUT's dependent variables for the selectbox
+    # Check is anyway performed to make sure the dependent variables
+    # are the same for both LUTs.
+    dependent_var_options = lut_metadata[0]["dependent_vars"][
+                            st.session_state.get("selected_device_type_0")]
+    dependent_var_ratios = []
+    # Create ratios of dependent variables
+    # Currently creating all possible ratios of dependent variables
+    # Eventually will try to trim this down to only ratios that make sense
+    for i in dependent_var_options:
+        dependent_var_ratios.append(f"{i}/w")
+        for j in dependent_var_options:
+            if i != j:
+                dependent_var_ratios.append(f"{i}/{j}")
 
-for i, lut in enumerate(lut_roots):
-    selected_device_type = st.session_state.get(f"selected_device_type_{i}")
-    if not selected_device_type:
-        continue
-    device_lut = lut.get(selected_device_type, {})
-    dependent_vars = []
-    independent_vars = []
-    for key, value in device_lut.items():
-        if isinstance(value, np.ndarray):
-            if value.ndim == 4:
-                dependent_vars.append(key)
-            elif value.ndim == 1 and value.size > 1:
-                independent_vars.append((key, value))
-    parameters_list.append({
-        "selected_device_type": selected_device_type,
-        "dependent_vars": dependent_vars,
-        "independent_vars": [k for k, _ in independent_vars]
-    })
+    selected_dependent_var = st.selectbox(
+                                        "**Dependent variable**",
+                                        dependent_var_options + dependent_var_ratios,
+                                        index=None
+                                        )
 
-if len(parameters_list) == 2: # Only compare if two LUTs are selected
-    if set(parameters_list[0]["dependent_vars"]) != set(parameters_list[1]["dependent_vars"]):
-        st.error("Dependent variables does not match between two LUT's")
-        st.stop()
-    if set(parameters_list[0]["independent_vars"]) != set(parameters_list[1]["independent_vars"]):
-        st.error("Independent variables does not match between two LUT's")
-        st.stop()
-# Adding important design variables to the independent_vars list
-design_vars = ["gm/id", "id/w"]
-for param in parameters_list:
-    param["independent_vars"].extend(design_vars)
-# Adding ratios to the dependent_vars list
-ratio_vars = []
-for i, var1 in enumerate(parameters_list[0]["dependent_vars"]):
-    for j, var2 in enumerate(parameters_list[0]["dependent_vars"]):
-        if i != j:
-            ratio_vars.append(f"{var1}/{var2}")
-    ratio_vars.append(f"{var1}/w")
-dependent_var_options = parameters_list[0]["dependent_vars"] + ratio_vars
+    # Debug: Independent and Dependent Variable list
+    if st.session_state.debug_mode:
+        with st.expander("DEBUG: Independent and Dependent Variable List", expanded=False):
+            st.write(list(
+                lut_metadata[0]["independent_vars"][
+                st.session_state.get("selected_device_type_0")
+                ].keys()))
+            st.write(dependent_var_options + dependent_var_ratios)
 
+    if selected_dependent_var and selected_independent_var:
+        if selected_dependent_var in selected_independent_var:
+            st.error(
+                (
+                "Dependent variable cannot be an independent variable. "
+                "Please select a different variable."
+                ))
+            st.stop()
 
-# --- Mutually Exclusive Selection for Independent Vars using st.multiselect ---
-if not parameters_list : # Check if parameters_list is empty
-    st.error("No parameters available. Please select a device type first.")
+    # Debug: Selected Independent and Dependent Variable
+    if st.session_state.debug_mode:
+        with st.expander("DEBUG: Selected Independent and Dependent Variable", expanded=False):
+            st.write(
+                    (
+                    f"- Independent variable: {selected_independent_var}\n"
+                    f"- Dependent Variable: {selected_dependent_var}"
+                    )
+            )
+
+except IndexError:
+    # If no LUTs are uploaded, show an error message and stop execution.
+    # Safeguard required when the file is removed from the uploader,
+    # after the selectbox and other elements are created.
+    # Currently the created widgets cannot be removed,
+    # as streamlit does not support dynamic widget removal.
+    st.error("No LUT uploaded. Please upload a LUT file to continue.")
     st.stop()
-if len(independent_vars) <= 1:
-    st.error("Independent variables dimensions not correct. Check LUT format.")
-    st.stop()
-
-selected_independent_var = st.multiselect(
-    textwrap.dedent("""\
-                    **Independent variables**\n
-                    Choose upto two variables.\n
-                    The **first** option is used as the **x-axis**.\n
-                    The **second** option is used for the **parametric axis**."""),
-    parameters_list[0]["independent_vars"],
-    default=None,
-    max_selections=2
-)
-selected_dependent_var = st.selectbox("**Dependent variable**", dependent_var_options, index=None)
-
-if selected_dependent_var and selected_independent_var:
-    if selected_dependent_var in selected_independent_var:
-        st.error("Dependent variable cannot be an independent variable. Please select a different variable.")
-        st.stop()
-
-st.write(f"""- Independent variable: {selected_independent_var}\n
-- Dependent Variable: {selected_dependent_var}""")
-
 # endregion
-# Build nested min/max dict for independent variables and gm/id arrays
-independent_var_minmax = defaultdict(lambda: defaultdict(lambda: defaultdict(dict)))
-
-for lut_number, lut in enumerate(lut_roots):
-    for device in lut_metadata[lut_number]["Device Type"]:
-        device_data_dict = lut.get(device, {})
-        for key, value in device_data_dict.items():
-            if isinstance(value, np.ndarray):
-                if (value.ndim == 1 and value.size > 1):
-                    independent_var_minmax[lut_number][device][key]["min"] = float(np.min(value))
-                    independent_var_minmax[lut_number][device][key]["max"] = float(np.max(value))
-                    independent_var_minmax[lut_number][device][key]["step"] = float(value[1] - value[0])
-                elif (value.ndim == 4 and key in ['gm', 'id']):
-                    if key == 'gm':
-                        independent_var_minmax[lut_number][device]["gm/id"]["min"] = None
-                        independent_var_minmax[lut_number][device]["gm/id"]["max"] = None
-                        independent_var_minmax[lut_number][device]["gm/id"]["step"] = None
-                    elif key == 'id':
-                        independent_var_minmax[lut_number][device]["id/w"]["min"] = None
-                        independent_var_minmax[lut_number][device]["id/w"]["max"] = None
-                        independent_var_minmax[lut_number][device]["id/w"]["step"] = None
-
-
-independent_var_minmax = {
-                            k: {
-                                dk: dict(dv)
-                                for dk, dv in v.items()
-                                }
-                            for k, v in independent_var_minmax.items()
-                        }
-
-for lut_number, lut in enumerate(lut_roots):
-    for device in lut_metadata[lut_number]["Device Type"]:
-        device_data_dict = lut.get(device, {})
-        # Add min/max for gm/id and id/w using look_up function
-        gm_id = look_up(
-            device_data_dict,
-            'gm_id',
-            length=float(np.min(device_data_dict["length"])),
-            gs=np.arange(
-                independent_var_minmax[lut_number][device]["gs"]["min"],
-                independent_var_minmax[lut_number][device]["gs"]["max"],
-                independent_var_minmax[lut_number][device]["gs"]["step"]
-                ),
-            ds=independent_var_minmax[lut_number][device]["ds"]["max"],
-            sb=independent_var_minmax[lut_number][device]["sb"]["min"]
-            )
-        id_w = look_up(
-            device_data_dict,
-            'id_w',
-            length=float(np.min(device_data_dict["length"])),
-            gs=np.arange(
-                independent_var_minmax[lut_number][device]["gs"]["min"],
-                independent_var_minmax[lut_number][device]["gs"]["max"],
-                independent_var_minmax[lut_number][device]["gs"]["step"]
-                ),
-            ds=independent_var_minmax[lut_number][device]["ds"]["max"],
-            sb=independent_var_minmax[lut_number][device]["sb"]["min"]
-            )
-        independent_var_minmax[lut_number][device]["gm/id"]["max"] = float(np.max(gm_id))
-        independent_var_minmax[lut_number][device]["gm/id"]["min"] = float(np.min(gm_id))
-        independent_var_minmax[lut_number][device]["gm/id"]["step"] = 0.5
-        independent_var_minmax[lut_number][device]["id/w"]["max"] = float(np.max(id_w))
-        independent_var_minmax[lut_number][device]["id/w"]["min"] = float(np.min(id_w))
-        # Logarithmic step size for id/w
-        id_w_logspace = np.logspace(np.log10(
-            independent_var_minmax[lut_number][device]["id/w"]["min"]),
-            independent_var_minmax[lut_number][device]["id/w"]["max"],
-            100
-            )
-        # Multiplicative step size
-        independent_var_minmax[lut_number][device]["id/w"]["step"] = (
-            id_w_logspace[1] / id_w_logspace[0]
-        )
 
 var_default = { }
-# create input fields for start:step:stop.
+# create input fields for the independent variables.
 # Assume 'selected' is your list of selected independent variables from st.multiselect
 if selected_independent_var:
-    for var in selected_independent_var:
-
-        # check if the independent variables min/max are the same for both LUTs
-        if len(parameters_list) == 2:
-            for elem in ["min", "max"]:
-                if independent_var_minmax[0][st.session_state.get("selected_device_type_0")][var][elem] != independent_var_minmax[1][st.session_state.get("selected_device_type_1")][var][elem]:
-                    st.warning(f"Independent variable {var} {elem} value does not match between two LUTs for given device type. Smaller of the two will be used.")
-                    var_default[elem] = min(
-                        abs(independent_var_minmax[0][st.session_state.get("selected_device_type_0")][var][elem]),
-                        abs(independent_var_minmax[1][st.session_state.get("selected_device_type_1")][var][elem])
-                    )
-                else:
-                    var_default[elem] = independent_var_minmax[0][st.session_state.get("selected_device_type_0")][var][elem]
-        else:
-            # If only one LUT is selected, use its values directly
-            var_default["min"] = independent_var_minmax[0][st.session_state.get("selected_device_type_0")][var]["min"]
-            var_default["max"] = independent_var_minmax[0][st.session_state.get("selected_device_type_0")][var]["max"]
-
+    for idx, var in enumerate(selected_independent_var):
         st.markdown(f"**Range for {var}:**")
         col1, col2, col3 = st.columns(3)
         with col1:
-            start = st.text_input(f"{var} start", key=f"{var}_start", value=fmt_str_si(var_default["min"]))
+            start = st.text_input(
+                    f"{var} start",
+                    key=f"{var}_start",
+                    value=fmt_str_si(
+                    min(
+                    lut_metadata[j]["independent_vars"][
+                        st.session_state.get(f"selected_device_type_{j}")
+                        ][var]["min"]
+                    for j in range(len(lut_metadata))
+                    )))
         with col2:
-            stop = st.text_input(f"{var} stop", key=f"{var}_stop", value=fmt_str_si(var_default["max"]))
+            stop = st.text_input(
+                    f"{var} stop",
+                    key=f"{var}_stop",
+                    value=fmt_str_si(
+                    min(
+                    lut_metadata[j]["independent_vars"][
+                        st.session_state.get(f"selected_device_type_{j}")
+                        ][var]["max"]
+                    for j in range(len(lut_metadata))
+                    )))
         with col3:
+            # Use the idx to determine between X-var and Parametric var
             # we don't bother comparing step size between two LUTs, just use the first one
-            step = st.text_input(f"{var} step", key=f"{var}_step", value=fmt_str_si(independent_var_minmax[0][st.session_state.get("selected_device_type_0")][var]["step"]))
+            if st.session_state.get(f"var_step_mode_selector_{idx}") == "Start:Stop:Step Mode":
+                step = st.text_input(
+                    f"{var} step",
+                    key=f"{var}_step",
+                    value=fmt_str_si(
+                    lut_metadata[0]["independent_vars"][
+                        st.session_state.get("selected_device_type_0")
+                        ][var]["step"]
+                    ))
+            elif st.session_state.get(
+                    f"var_step_mode_selector_{idx}"
+                    ) == "Start:Stop:N-Elements Mode":
+                # In this mode, we don't use step, but rather the number of elements
+                try:
+                    n_elements = st.text_input(
+                        f"{var} N-elements",
+                        key=f"{var}_n_elements",
+                        value=int(abs((
+                        lut_metadata[0]["independent_vars"][
+                            st.session_state.get("selected_device_type_0")
+                            ][var]["max"] -
+                        lut_metadata[0]["independent_vars"][
+                            st.session_state.get("selected_device_type_0")
+                            ][var]["min"])/
+                        lut_metadata[0]["independent_vars"][
+                            st.session_state.get("selected_device_type_0")
+                            ][var]["step"]
+                        )))
+                except ZeroDivisionError:
+                    n_elements = st.text_input(
+                        f"{var} N-elements",
+                        key=f"{var}_n_elements",
+                        value=10)
+                    st.warning(
+                        "ZeroDivisionError: LUT Metadata Step size is zero. "
+                        "Setting N-elements to 10. "
+                        "Please check the LUT for valid values."
+                    )
