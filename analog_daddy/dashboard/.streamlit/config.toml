@@ -130,3 +130,5 @@ borderColor = "#bd93f9"
 
 # Max size, in megabytes, for files uploaded with the file_uploader.
 maxUploadSize = 1000
+
+runOnSave = true
