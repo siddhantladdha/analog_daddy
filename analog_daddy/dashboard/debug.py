@@ -16,34 +16,29 @@ def show_debug_info(lut_roots=None,
     """
     # since we are printing the list just use the LUT 0 (which always exists.)
     # LUT root display.
-    with st.expander("LUT Root Structure", expanded=False):
-        st_pretty_print_lut(lut_roots)
+    if lut_roots:
+        with st.expander("LUT Root Structure", expanded=False):
+            st_pretty_print_lut(lut_roots)
+    else:
+        st.error("No LUT roots available. Please upload .npy files.")
+        return 0
     # LUT Metadata Structure
-    with st.expander("LUT Metadata Structure", expanded=False):
-        st.write(lut_metadata)
-    # Independent and Dependent Variable list
-    for idx in len(lut_metadata):
-        with st.expander(
-            f"Independent and Dependent Variable List for LUT {idx}",
-            expanded=False):
+    if lut_metadata:
+        with st.expander("LUT Metadata Structure", expanded=False):
+            st.write(lut_metadata)
 
-            st.write(list(
-                lut_metadata[idx]["independent_vars"][
-                    selected_device_type[idx]
-                ].keys()))
-            st.write(
-                lut_metadata[idx]["dependent_vars"][
-                    selected_device_type[idx]
-                ])
-
-    # Selected Independent and Dependent Variable
+    # Selected device type, Independent and Dependent Variable
     with st.expander(
-        "Selected Independent and Dependent Variable",
-        expanded=False):
+        "Selected Values",
+        expanded=True):
         st.write(
                 (
-                f"- Independent variable: {selected_independent_var}\n"
-                f"- Dependent Variable: {selected_dependent_var}"
+                f"- Device Type: "
+                f"{[x for x in selected_device_type if x is not None]}\n"
+                f"- Independent variable: "
+                f"{[x for x in selected_independent_var if x is not None]}\n"
+                f"- Dependent Variable: "
+                f"{selected_dependent_var if selected_dependent_var is not None else ''}\n"
                 )
         )
     return 0
