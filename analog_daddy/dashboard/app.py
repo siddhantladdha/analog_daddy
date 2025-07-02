@@ -5,7 +5,7 @@ import streamlit as st
 import numpy as np
 from parse_si import format_si_or_scientific as fmt_str_si
 from data_loader import load_lut_files
-from analog_daddy.utils import pretty_print_structure, describe_structure
+from debug import show_debug_info
 from analog_daddy.look_up import look_up
 
 st.set_page_config(
@@ -43,6 +43,19 @@ with st.sidebar.expander("Advanced Preferences", expanded=True):
         key="var_step_mode_selector_1"
     )
 
+if st.session_state.debug_mode:
+    with st.sidebar.expander("DEBUG Mode", expanded=True):
+        show_debug_info(
+            lut_roots,
+            lut_metadata,
+            [
+                st.session_state.get("selected_device_type_0"),
+                st.session_state.get("selected_device_type_1"),
+            ],
+            st.session_state.get("selected_independent_var"),
+            st.session_state.get("selected_dependent_var"),
+            )
+
 st.title("Dashboard")
 
 # Show status messages in main area
@@ -58,21 +71,6 @@ for msg in status_msgs:
         st.stop()
     else:
         st.info(msg)
-
-# Debug: LUT Root Structure
-if st.session_state.debug_mode:
-    with st.expander("DEBUG: LUT Root Structure", expanded=False):
-        buf = io.StringIO()
-        with contextlib.redirect_stdout(buf):
-            for i, lut in enumerate(lut_roots):
-                print(f"LUT Root {i} structure:")
-                pretty_print_structure(describe_structure(lut))
-        st.code(buf.getvalue(), language="yaml")
-
-# Debug: LUT Metadata Structure
-if st.session_state.debug_mode:
-    with st.expander("DEBUG: LUT Metadata Structure", expanded=False):
-        st.write(lut_metadata)
 
 # region Device Selection Table
 headers = ["Device Type", "Temperature/Corner", "Info"]
@@ -123,6 +121,7 @@ try:
                 st.session_state.get("selected_device_type_0")
                 ].keys()),
         default=None,
+        key="selected_independent_var",
         max_selections=2
     )
 
@@ -130,19 +129,9 @@ try:
                                         "**Dependent variable**",
                                         lut_metadata[0]["dependent_vars"][
                                         st.session_state.get("selected_device_type_0")],
-                                        index=None
+                                        index=None,
+                                        key="selected_dependent_var"
                                         )
-
-    # Debug: Independent and Dependent Variable list
-    if st.session_state.debug_mode:
-        with st.expander("DEBUG: Independent and Dependent Variable List", expanded=False):
-            st.write(list(
-                lut_metadata[0]["independent_vars"][
-                st.session_state.get("selected_device_type_0")
-                ].keys()))
-            st.write(
-                    lut_metadata[0]["dependent_vars"][
-                    st.session_state.get("selected_device_type_0")])
 
     if selected_dependent_var and selected_independent_var:
         if selected_dependent_var in selected_independent_var:
@@ -152,16 +141,6 @@ try:
                 "Please select a different variable."
                 ))
             st.stop()
-
-    # Debug: Selected Independent and Dependent Variable
-    if st.session_state.debug_mode:
-        with st.expander("DEBUG: Selected Independent and Dependent Variable", expanded=False):
-            st.write(
-                    (
-                    f"- Independent variable: {selected_independent_var}\n"
-                    f"- Dependent Variable: {selected_dependent_var}"
-                    )
-            )
 
 except IndexError:
     # If no LUTs are uploaded, show an error message and stop execution.
