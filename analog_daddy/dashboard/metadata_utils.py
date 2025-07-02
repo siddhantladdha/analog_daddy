@@ -46,7 +46,8 @@ def build_lut_metadata(lut_roots: List[dict]) -> List[dict]:
                         meta["independent_vars"][device][key] = {
                             "min": float(np.min(value)),
                             "max": float(np.max(value)),
-                            "step": float(value[1] - value[0])
+                            "step": float(value[1] - value[0]),
+                            "N-elements": value.size
                         }
             # Add design vars (gm/id, id/w)
             # Fill in min/max/step for gm/id and id/w if possible
@@ -55,12 +56,18 @@ def build_lut_metadata(lut_roots: List[dict]) -> List[dict]:
                 meta["independent_vars"][device]["gm/id"] = {
                     "min": 2,
                     "max": 30,
-                    "step": 0.5
+                    "step": 0.5,
+                    "N-elements": 57
                 }
+                # for id/w entering some value which makes sense.
+                # ideally you would want a log space array
+                # for default values using linear spacing.
+                # and using 100 elements as an example.
                 meta["independent_vars"][device]["id/w"] = {
                     "min": 1e-9,
                     "max": 1e-3,
-                    "step": 1e-8
+                    "step": 1e-8,
+                    "N-elements": 100
                 }
             except KeyError as e:
                 # gm, id or w not found, set design vars to None
