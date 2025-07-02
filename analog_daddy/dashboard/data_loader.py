@@ -11,7 +11,6 @@ and design variables with their min/max/step values.
 
 from typing import List, Tuple, Any
 from io import BytesIO
-from collections import defaultdict
 import streamlit as st
 import numpy as np
 
@@ -120,11 +119,16 @@ def build_lut_metadata(lut_roots: List[dict]) -> List[dict]:
             "Device Type": device_types, # List of device types in the LUT
             "Temperature/Corner": f"{lut.get('temperature')}°C : {lut.get('corner')}",
             "Info": lut.get('info'),
-            "independent_vars": defaultdict(lambda: defaultdict(dict)),
-            "dependent_vars": defaultdict(list),
+            "independent_vars": {},
+            "dependent_vars": {},
         }
         # iterate through each device type in the LUT
         for device in device_types:
+            # Explicitly initialize nested dicts/lists for each device
+            if device not in meta["independent_vars"]:
+                meta["independent_vars"][device] = {}
+            if device not in meta["dependent_vars"]:
+                meta["dependent_vars"][device] = []
             device_data_dict = lut.get(device, {})
             # iterate through the device data dictionary
             # to find independent and dependent variables.
@@ -174,8 +178,7 @@ def build_lut_metadata(lut_roots: List[dict]) -> List[dict]:
                 for device in lut_metadata[i]["Device Type"]:
                     if set(lut_metadata[i][var_type][device]) != set(reference_keys[var_type]):
                         st.error((
-                            f"{var_type} do not match for "
-                            "LUT: {i}, device: {device}."
+                            f"{var_type} do not match for LUT: {i}, device: {device}. "
                             "Please correct the LUT keys."))
                         st.stop()
     return lut_metadata
