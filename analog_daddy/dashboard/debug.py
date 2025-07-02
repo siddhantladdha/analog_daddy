@@ -28,15 +28,17 @@ def show_debug_info(lut_roots=None,
             st.write(lut_metadata)
 
     # Selected device type, Independent and Dependent Variable
+    # if the ui elements are not created, then the state value is None.
+    # Hence assigning an [] to the values in None.
     with st.expander(
         "Selected Values",
         expanded=True):
         st.write(
                 (
                 f"- Device Type: "
-                f"{[x for x in selected_device_type if x is not None]}\n"
+                f"{[x for x in (selected_device_type or []) if x is not None]}\n"
                 f"- Independent variable: "
-                f"{[x for x in selected_independent_var if x is not None]}\n"
+                f"{[x for x in (selected_independent_var or []) if x is not None]}\n"
                 f"- Dependent Variable: "
                 f"{selected_dependent_var if selected_dependent_var is not None else ''}\n"
                 )
