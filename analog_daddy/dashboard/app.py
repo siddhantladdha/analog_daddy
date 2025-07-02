@@ -187,8 +187,8 @@ if selected_independent_var:
                     value=fmt_str_si(
                     min(
                     lut_metadata[j]["independent_vars"][
-                        st.session_state.get(f"selected_device_type_{j}")
-                        ][var]["min"]
+                    st.session_state.get(f"selected_device_type_{j}")
+                    ][var]["min"]
                     for j in range(len(lut_metadata))
                     )))
         with col2:
@@ -198,48 +198,31 @@ if selected_independent_var:
                     value=fmt_str_si(
                     min(
                     lut_metadata[j]["independent_vars"][
-                        st.session_state.get(f"selected_device_type_{j}")
-                        ][var]["max"]
+                    st.session_state.get(f"selected_device_type_{j}")
+                    ][var]["max"]
                     for j in range(len(lut_metadata))
                     )))
         with col3:
             # Use the idx to determine between X-var and Parametric var
-            # we don't bother comparing step size between two LUTs, just use the first one
+            # we don't bother comparing step size/ elements between two LUTs, just use the first one
             if st.session_state.get(f"var_step_mode_selector_{idx}") == "Start:Stop:Step Mode":
                 step = st.text_input(
-                    f"{var} step",
-                    key=f"{var}_step",
-                    value=fmt_str_si(
-                    lut_metadata[0]["independent_vars"][
-                        st.session_state.get("selected_device_type_0")
-                        ][var]["step"]
-                    ))
+                f"{var} step",
+                key=f"{var}_step",
+                value=fmt_str_si(
+                lut_metadata[0]["independent_vars"][
+                st.session_state.get("selected_device_type_0")
+                ][var]["step"]
+                ))
             elif st.session_state.get(
-                    f"var_step_mode_selector_{idx}"
-                    ) == "Start:Stop:N-Elements Mode":
+                f"var_step_mode_selector_{idx}"
+                ) == "Start:Stop:N-Elements Mode":
                 # In this mode, we don't use step, but rather the number of elements
-                try:
-                    n_elements = st.text_input(
-                        f"{var} N-elements",
-                        key=f"{var}_n_elements",
-                        value=int(abs((
-                        lut_metadata[0]["independent_vars"][
-                            st.session_state.get("selected_device_type_0")
-                            ][var]["max"] -
-                        lut_metadata[0]["independent_vars"][
-                            st.session_state.get("selected_device_type_0")
-                            ][var]["min"])/
-                        lut_metadata[0]["independent_vars"][
-                            st.session_state.get("selected_device_type_0")
-                            ][var]["step"]
-                        )))
-                except ZeroDivisionError:
-                    n_elements = st.text_input(
-                        f"{var} N-elements",
-                        key=f"{var}_n_elements",
-                        value=10)
-                    st.warning(
-                        "ZeroDivisionError: LUT Metadata Step size is zero. "
-                        "Setting N-elements to 10. "
-                        "Please check the LUT for valid values."
-                    )
+                n_elements = st.text_input(
+                f"{var} N-elements",
+                key=f"{var}_n_elements",
+                value=fmt_str_si(
+                lut_metadata[0]["independent_vars"][
+                st.session_state.get("selected_device_type_0")
+                ][var]["N-elements"]
+                ))
