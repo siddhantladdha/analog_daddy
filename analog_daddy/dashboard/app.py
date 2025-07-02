@@ -1,11 +1,8 @@
-import io
-import contextlib
 import textwrap
 import streamlit as st
 import numpy as np
 from parse_si import format_si_or_scientific as fmt_str_si
-from data_loader import load_lut_files
-from debug import show_debug_info
+from sidebar import render_sidebar
 from analog_daddy.look_up import look_up
 
 st.set_page_config(
@@ -15,46 +12,8 @@ st.set_page_config(
 )
 
 # Sidebar: Dashboard Controls
-st.sidebar.title("Sidebar")
-
-# File uploader in sidebar context
-with st.sidebar:
-    lut_roots, status_msgs, lut_metadata = load_lut_files()
-
-# Advanced Preferences section in sidebar
-with st.sidebar.expander("Advanced Preferences", expanded=True):
-    mode = st.radio(
-        "Select Dashboard Mode:",
-        ("User Mode", "Debug Mode"),
-        index=1,  # 0 for "User Mode", 1 for "Debug Mode"
-        key="mode_selector"
-    )
-    st.session_state.debug_mode = (mode == "Debug Mode")
-    x_var_step_mode = st.radio(
-        "Select Mode for Array creation for X-axis:",
-        ("Start:Stop:Step Mode", "Start:Stop:N-Elements Mode"),
-        index=0,  # 0 for "Start:Stop:Step Mode", 1 for "Start:Stop:N-Elements Mode"
-        key="var_step_mode_selector_0"
-    )
-    param_var_step_mode = st.radio(
-        "Select Mode for Array creation for Parametric axis:",
-        ("Start:Stop:Step Mode", "Start:Stop:N-Elements Mode"),
-        index=1,  # 0 for "Start:Stop:Step Mode", 1 for "Start:Stop:N-Elements Mode"
-        key="var_step_mode_selector_1"
-    )
-
-if st.session_state.debug_mode:
-    with st.sidebar.expander("DEBUG Mode", expanded=True):
-        show_debug_info(
-            lut_roots,
-            lut_metadata,
-            [
-                st.session_state.get("selected_device_type_0"),
-                st.session_state.get("selected_device_type_1"),
-            ],
-            st.session_state.get("selected_independent_var"),
-            st.session_state.get("selected_dependent_var"),
-            )
+# Handles file_uploader, debug mode, and advanced preferences.
+lut_roots, status_msgs, lut_metadata = render_sidebar()
 
 st.title("Dashboard")
 
