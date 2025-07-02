@@ -143,17 +143,17 @@ def build_lut_metadata(lut_roots: List[dict]) -> List[dict]:
                         }
             # Add design vars (gm/id, id/w)
             # Fill in min/max/step for gm/id and id/w if possible
-            # Currently, the min/max are None.
+            # Currently, the min/max are set to some value.
             try:
                 meta["independent_vars"][device]["gm/id"] = {
-                    "min": None,
-                    "max": None,
-                    "step": None
+                    "min": 2,
+                    "max": 30,
+                    "step": 0.5
                 }
                 meta["independent_vars"][device]["id/w"] = {
-                    "min": None,
-                    "max": None,
-                    "step": None
+                    "min": 1e-9,
+                    "max": 1e-3,
+                    "step": 1e-8
                 }
             except KeyError as e:
                 # gm, id or w not found, set design vars to None
@@ -165,4 +165,17 @@ def build_lut_metadata(lut_roots: List[dict]) -> List[dict]:
                             "step": None
                             }
         lut_metadata.append(meta)
+
+    if len(lut_metadata) == 2: # Only compare if two LUTs are selected
+        reference_keys = {}
+        for var_type in ["dependent_vars", "independent_vars"]:
+            reference_keys[var_type] = lut_metadata[0][var_type][lut_metadata[0]["Device Type"][0]]
+            for i in range(1, len(lut_metadata)):
+                for device in lut_metadata[i]["Device Type"]:
+                    if set(lut_metadata[i][var_type][device]) != set(reference_keys[var_type]):
+                        st.error((
+                            f"{var_type} do not match for "
+                            "LUT: {i}, device: {device}."
+                            "Please correct the LUT keys."))
+                        st.stop()
     return lut_metadata
