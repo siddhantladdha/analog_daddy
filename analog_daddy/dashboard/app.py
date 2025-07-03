@@ -1,10 +1,7 @@
-import textwrap
 import streamlit as st
-import numpy as np
-from parse_si import format_si_or_scientific as fmt_str_si
 from sidebar import render_sidebar
-from analog_daddy.look_up import look_up
 from selection_tables import device_selection_table, variable_selection_table, input_range_table
+from plotter import state_dict_creator, lookup_array_creator
 
 st.set_page_config(
     page_title="Analog Daddy Dashboard",
@@ -61,3 +58,5 @@ input_range_table(
     ],
     st.session_state.get("selected_independent_var"),
     )
+
+st.write(lookup_array_creator(state_dict_creator(lut_roots)))
