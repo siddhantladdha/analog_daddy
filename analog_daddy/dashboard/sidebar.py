@@ -7,6 +7,11 @@ def render_sidebar():
     Render the sidebar controls and debug panel.
     Loads LUT files, sets dashboard mode, and advanced preferences.
     """
+    step_mode_options_dict = {
+                                "step": "Start:Stop:Step Mode",
+                                "N-elements": "Start:Stop:N-Elements Mode",
+    }
+
     with st.sidebar:
         st.title("Sidebar")
 
@@ -23,13 +28,15 @@ def render_sidebar():
             )
             st.radio(
                 "Select Mode for Array creation for X-axis:",
-                ("Start:Stop:Step Mode", "Start:Stop:N-Elements Mode"),
+                options=list(step_mode_options_dict.keys()),
+                format_func=lambda x: step_mode_options_dict[x],
                 index=0,
                 key="var_step_mode_selector_0"
             )
             st.radio(
                 "Select Mode for Array creation for Parametric axis:",
-                ("Start:Stop:Step Mode", "Start:Stop:N-Elements Mode"),
+                options=list(step_mode_options_dict.keys()),
+                format_func=lambda x: step_mode_options_dict[x],
                 index=1,
                 key="var_step_mode_selector_1"
             )

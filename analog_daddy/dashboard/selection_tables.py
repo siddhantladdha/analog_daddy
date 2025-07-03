@@ -75,12 +75,7 @@ def input_range_table(lut_metadata=None, selected_device_type=None, selected_ind
 
         for idx, var in enumerate(selected_independent_var):
             # Setting the correct key for the step mode selector
-            if st.session_state.get(f"var_step_mode_selector_{idx}") == "Start:Stop:Step Mode":
-                var_step_mode_key = "step"
-            elif st.session_state.get(f"var_step_mode_selector_{idx}") == "Start:Stop:N-Elements Mode":
-                var_step_mode_key = "N-elements"
-            else:
-                var_step_mode_key = "step"
+            var_step_mode_key = st.session_state.get(f"var_step_mode_selector_{idx}")
 
             col1, col2, col3 = st.columns(3)
             col1.text_input(
