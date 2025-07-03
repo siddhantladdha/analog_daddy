@@ -47,5 +47,7 @@ def format_si_or_scientific(value, style='si', precision=6):
                 mantissa_str = str(int(mantissa))
             else:
                 mantissa_str = f"{mantissa:.{precision}g}"
+                if 'e' in mantissa_str or 'E' in mantissa_str:
+                    mantissa_str = f"{mantissa:.{precision}f}".rstrip('0').rstrip('.')
             return f"{mantissa_str}{prefix}"
     return str(value)
