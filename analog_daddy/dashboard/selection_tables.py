@@ -68,11 +68,11 @@ def input_range_table(lut_metadata=None, selected_device_type=None, selected_ind
     Render the input range controls for the selected independent variables.
     Returns a dictionary of default values for each variable.
     """
-    st.markdown("**Range for variables:**")
     if (lut_metadata and
         selected_device_type and
         selected_independent_var):
 
+        st.markdown("**Range for variables:**")
         for idx, var in enumerate(selected_independent_var):
             # Setting the correct key for the step mode selector
             var_step_mode_key = st.session_state.get(f"var_step_mode_selector_{idx}")
@@ -104,4 +104,7 @@ def input_range_table(lut_metadata=None, selected_device_type=None, selected_ind
                         selected_device_type[0]][var][var_step_mode_key]
                 )
             )
+    else:
+        st.error("Please select atleast one independent variable.")
+        st.stop()
     return 0
