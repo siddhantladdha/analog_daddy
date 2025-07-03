@@ -22,7 +22,7 @@ def parse_text_for_scientific_or_si_prefix(value):
         number, prefix = match.groups()
         return float(number) * si_dict.get(prefix, 1)
     else:
-        return None
+        raise ValueError(f"Could not parse SI value: {value!r}")
 
 def format_si_or_scientific(value, style='si', precision=6):
     """
