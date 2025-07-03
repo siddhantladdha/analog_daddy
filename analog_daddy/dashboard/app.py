@@ -1,7 +1,7 @@
 import streamlit as st
 from sidebar import render_sidebar
 from selection_tables import device_selection_table, variable_selection_table, input_range_table
-from plotter import state_dict_creator, lookup_array_creator
+from plotter import state_dict_creator, lookup_array_creator, plot_lookup_result
 
 st.set_page_config(
     page_title="Analog Daddy Dashboard",
@@ -58,5 +58,17 @@ input_range_table(
     ],
     st.session_state.get("selected_independent_var"),
     )
-
-st.write(lookup_array_creator(state_dict_creator(lut_roots)))
+# flow control for dependent variable selection.
+# since the lookup cannot proceed without a dependent variable
+if st.session_state.get("selected_dependent_var"):
+    # create the state dictionary for the LUT roots
+    # lookup the values
+    # and plot the results. (via unpacking the lookup values returned.)
+    plot_lookup_result(*lookup_array_creator(state_dict_creator(lut_roots)))
+else:
+    st.error(
+            (
+            "No dependent variable is selected, "
+            "Please select a dependent variable."
+            ))
+    st.stop()
