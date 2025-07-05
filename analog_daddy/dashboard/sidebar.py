@@ -1,6 +1,6 @@
 import streamlit as st
 from data_loader import load_lut_files
-from debug import show_debug_info
+from debug import show_sidebar_debug_info
 
 def render_sidebar():
     """
@@ -12,6 +12,11 @@ def render_sidebar():
                                 "N-elements": "Start:Stop:N-Elements Mode",
     }
 
+    dashboard_mode_options = [
+                                "User Mode",
+                                "Debug Mode",
+    ]
+
     with st.sidebar:
         st.title("Sidebar")
 
@@ -22,7 +27,8 @@ def render_sidebar():
         with st.expander("Advanced Preferences", expanded=True):
             st.radio(
                 "Select Dashboard Mode:",
-                ("User Mode", "Debug Mode"),
+                [0, 1],
+                format_func=lambda x: dashboard_mode_options[x],
                 index=1,  # 0 for "User Mode", 1 for "Debug Mode"
                 key="debug_mode_selector"
             )
@@ -41,9 +47,9 @@ def render_sidebar():
                 key="var_step_mode_selector_1"
             )
 
-        if st.session_state.get("debug_mode_selector") == "Debug Mode":
+        if st.session_state.get("debug_mode_selector"):
             with st.expander("DEBUG Mode", expanded=True):
-                show_debug_info(
+                show_sidebar_debug_info(
                     lut_roots,
                     lut_metadata,
                 )
