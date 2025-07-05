@@ -10,6 +10,8 @@ def parse_text_for_scientific_or_si_prefix(value):
         'f': 1e-15, 'p': 1e-12, 'n': 1e-9, 'u': 1e-6, 'm': 1e-3,
         '': 1, 'k': 1e3, 'M': 1e6, 'G': 1e9, 'T': 1e12
     }
+    if not isinstance(value, str):
+        raise ValueError(f"Expected a string, got {type(value).__name__}")
     value = value.strip()
     # Try to parse as float (handles scientific notation)
     try:

@@ -26,10 +26,9 @@ def state_dict_creator(lut_roots: List[Any]) -> Dict[str, Any]:
             state_dict[f"{indep_var}_step_mode"] = st.session_state.get(f"var_step_mode_selector_{idx}")
             step_mode = state_dict[f"{indep_var}_step_mode"]
             state_dict[f"{indep_var}_step_or_n"] = parse_si(st.session_state.get(f"{indep_var}_{step_mode}"))
-    except ValueError as e:
-        st.error(f"Check input field: {e}")
-        st.stop()
-
+    except (ValueError, TypeError) as e:
+            st.error(f"Check input field: {e}")
+            st.stop()
     return state_dict
 
 @st.cache_data
