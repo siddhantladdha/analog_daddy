@@ -69,14 +69,14 @@ if st.session_state.get("selected_dependent_var"):
 
     (
         indep_vars_range,
-        dep_var_range,
+        dep_var_range_dict,
         indep_vars,
         dep_var,
     ) = lookup_array_creator(state_dict_creator(lut_roots))
 
 
-    show_page_debug_info(indep_vars_range, dep_var_range, indep_vars, dep_var)
-    plot_lookup_result(indep_vars_range, dep_var_range, indep_vars, dep_var)
+    show_page_debug_info(indep_vars_range, dep_var_range_dict, indep_vars, dep_var)
+    plot_lookup_result(indep_vars_range, dep_var_range_dict, indep_vars, dep_var)
 else:
     st.error(
             (

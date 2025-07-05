@@ -93,19 +93,22 @@ def array_creator(start, stop, step_or_n, step_mode):
         raise ValueError(f"Unknown step mode: {step_mode}")
 
 @st.cache_data
-def lookup_array_creator(state_dict: Dict[str, Any]) -> Dict[str, np.ndarray]:
+def lookup_array_creator(state_dict: Dict[str, Any]):
     """
-    Generate a look_up string.
+    Generate arrays for independent variables using indep_array_creator
+    and perform look_up for the dependent variable over the specified range(s).
 
     Args:
-        device (str): The device or LUT variable.
-        param (str): The dependent variable to look up.
-        x_var (str): The independent variable (x-axis).
-        x_range (str): The name of the array for the x-axis.
-        **kwargs: Any additional keyword arguments for fixed variables.
+        state_dict (Dict[str, Any]): State dictionary containing LUT roots,
+        selected device type, selected independent and dependent variables, and their ranges.
 
     Returns:
-        str: The look_up string.
+        indep_vars_range (List[np.ndarray]): List of arrays for each independent variable
+        (e.g., x, param axes).
+        dep_var_range_dict (Dict[str, np.ndarray]): Dictionary mapping LUT_index as ("str") to
+        the result of look_up (np.ndarray).
+        indep_vars (List[str]): List of independent variable names (after formatting).
+        dep_var (str): Name of the dependent variable (after formatting).
     """
     lut_roots = state_dict.get("lut_roots", [])
     indep_vars = [
@@ -113,7 +116,7 @@ def lookup_array_creator(state_dict: Dict[str, Any]) -> Dict[str, np.ndarray]:
         ]
     indep_vars_range = indep_array_creator(state_dict)
     dep_var = ratio_slash_to_underscore(state_dict.get("selected_dependent_var", []))
-    dep_var_range = {}
+    dep_var_range_dict = {}
 
     # need to pass a default value for gs since the look_up
     # function defaults it to a 1-D array.
@@ -124,25 +127,29 @@ def lookup_array_creator(state_dict: Dict[str, Any]) -> Dict[str, np.ndarray]:
     # iterate over each LUT root
     for idx, lut_root_val in enumerate(lut_roots):
         if len(indep_vars) == 1:
-            dep_var_range[f"{idx}"] = look_up(
-                        # device selection.
-                        lut_root_val[state_dict.get("selected_device_type")[idx]],
-                        # dependent variable selection.
-                        dep_var,
-                        **kwargs)
-        elif len(indep_vars) == 2:
-            dep_var_range[f"{idx}"] = []
-            for param_var in indep_vars_range[1]:
-                kwargs.update({indep_vars[1]: param_var})
-                dep_var_range[f"{idx}"].append(
-                    look_up(
+            # Explicit conversion to np.ndarray
+            # to ensure the return type is consistent.
+            dep_var_range_dict[f"{idx}"] = np.array(look_up(
                         # device selection.
                         lut_root_val[state_dict.get("selected_device_type")[idx]],
                         # dependent variable selection.
                         dep_var,
                         **kwargs))
-            dep_var_range[f"{idx}"] = np.array(dep_var_range[f"{idx}"])
-    return indep_vars_range, dep_var_range, indep_vars, dep_var
+        elif len(indep_vars) == 2:
+            # Initialize the empty list for a given LUT index. ("idx")
+            # This way the element is a list of np.ndarray
+            dep_var_range_dict[f"{idx}"] = []
+            for param_var in indep_vars_range[1]:
+                kwargs.update({indep_vars[1]: param_var})
+                dep_var_range_dict[f"{idx}"].append(np.array(
+                    look_up(
+                        # device selection.
+                        lut_root_val[state_dict.get("selected_device_type")[idx]],
+                        # dependent variable selection.
+                        dep_var,
+                        **kwargs)))
+            dep_var_range_dict[f"{idx}"] = np.array(dep_var_range_dict[f"{idx}"])
+    return indep_vars_range, dep_var_range_dict, indep_vars, dep_var
 
 @st.cache_data
 def plot_lookup_result(

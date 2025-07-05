@@ -73,7 +73,7 @@ def st_pretty_print_lut(lut_roots=None):
 # function is called after the sidebar is rendered.
 # Hence calling it twice does not make sense.
 def show_page_debug_info(indep_vars_range=None,
-                         dep_var_range=None,
+                         dep_var_range_dict=None,
                          indep_vars=None,
                          dep_var=None):
     if st.session_state.get("debug_mode_selector"):
@@ -81,8 +81,8 @@ def show_page_debug_info(indep_vars_range=None,
             st.write(f"Variables: {indep_vars}, {dep_var}")
             st.write(f"Independent variable Array shape: {safe_shape(indep_vars_range)}")
             st.write("Independent variable Array value:", indep_vars_range)
-            st.write(f"Dependent variable Array shape: {safe_shape(dep_var_range)}")
-            st.write("Dependent variable Array value: ",dep_var_range)
+            st.write(f"Dependent variable Array shape: {safe_shape(dep_var_range_dict)}")
+            st.write("Dependent variable Array value: ",dep_var_range_dict)
 
 def safe_shape(arr):
     """
@@ -96,11 +96,8 @@ def safe_shape(arr):
         filtered = [np.shape(elem) if isinstance(elem, np.ndarray) else None for elem in arr]
         return filtered
     elif isinstance(arr, dict):
-        st.write("Here")
-        for elem in arr.items():
-            st.write(f"{type(elem)}")
         filtered = [
-            np.shape(elem) if isinstance(elem, np.ndarray) else None for elem in arr.items()
+            np.shape(elem) if isinstance(elem, np.ndarray) else None for elem in arr.values()
             ]
         return filtered
     else:
