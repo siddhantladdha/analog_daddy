@@ -4,6 +4,7 @@ from selection_tables import device_selection_table, variable_selection_table, i
 from plotter import state_dict_creator, lookup_array_creator, plot_lookup_result
 import numpy as np
 from debug import show_page_debug_info
+from variable_logic_checker import mutual_exclusivity_check, gm_id_id_w_mutual_exclusivity_check
 
 st.set_page_config(
     page_title="Analog Daddy Dashboard",
@@ -39,18 +40,13 @@ device_selection_table(lut_metadata)
 variable_selection_table(lut_metadata[0], st.session_state.get("selected_device_type_0"))
 
 # Mutual exlusivity check for independent and dependent variables
-if (
-    st.session_state.get("selected_independent_var") and
-    st.session_state.get("selected_dependent_var") and
-    st.session_state.get("selected_dependent_var") in
-    st.session_state.get("selected_independent_var")
-):
-    st.error(
-            (
-            "Dependent variable cannot be an independent variable. "
-            "Please select a different variable."
-            ))
-    st.stop()
+
+mutual_exclusivity_check(
+    st.session_state.get("selected_independent_var"),
+    st.session_state.get("selected_dependent_var"),
+)
+
+gm_id_id_w_mutual_exclusivity_check(st.session_state.get("selected_independent_var"))
 
 input_range_table(
     lut_metadata,
@@ -66,13 +62,23 @@ if st.session_state.get("selected_dependent_var"):
     # create the state dictionary for the LUT roots
     # lookup the values
     # and plot the results.
+    try:
+        (
+            indep_vars_range,
+            dep_var_range_dict,
+            indep_vars,
+            dep_var,
+        ) = lookup_array_creator(state_dict_creator(lut_roots))
 
-    (
-        indep_vars_range,
-        dep_var_range_dict,
-        indep_vars,
-        dep_var,
-    ) = lookup_array_creator(state_dict_creator(lut_roots))
+    except ValueError as e:
+        error_msg = str(e)
+        if "below the interpolation range's minimum value" in error_msg:
+            # Handle this specific ValueError
+            st.error(f"Input is below the allowed range.{error_msg}")
+            st.stop()
+        else:
+            # Re-raise or handle other ValueErrors
+            raise
 
 
     show_page_debug_info(indep_vars_range, dep_var_range_dict, indep_vars, dep_var)
