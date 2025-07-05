@@ -2,6 +2,8 @@ import streamlit as st
 from sidebar import render_sidebar
 from selection_tables import device_selection_table, variable_selection_table, input_range_table
 from plotter import state_dict_creator, lookup_array_creator, plot_lookup_result
+import numpy as np
+from debug import show_page_debug_info
 
 st.set_page_config(
     page_title="Analog Daddy Dashboard",
@@ -63,8 +65,18 @@ input_range_table(
 if st.session_state.get("selected_dependent_var"):
     # create the state dictionary for the LUT roots
     # lookup the values
-    # and plot the results. (via unpacking the lookup values returned.)
-    plot_lookup_result(*lookup_array_creator(state_dict_creator(lut_roots)))
+    # and plot the results.
+
+    (
+        indep_vars_range,
+        dep_var_range,
+        indep_vars,
+        dep_var,
+    ) = lookup_array_creator(state_dict_creator(lut_roots))
+
+
+    show_page_debug_info(indep_vars_range, dep_var_range, indep_vars, dep_var)
+    plot_lookup_result(indep_vars_range, dep_var_range, indep_vars, dep_var)
 else:
     st.error(
             (

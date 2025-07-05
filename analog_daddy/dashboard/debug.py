@@ -3,10 +3,11 @@ import contextlib
 import streamlit as st
 from analog_daddy.utils import pretty_print_structure, describe_structure
 from plotter import state_dict_creator
+import numpy as np
 
 # @st.cache_data
 # Disabling caching since need to support session state updates.
-def show_debug_info(lut_roots=None,
+def show_sidebar_debug_info(lut_roots=None,
                     lut_metadata=None,
                     ):
     """
@@ -65,3 +66,42 @@ def st_pretty_print_lut(lut_roots=None):
             pretty_print_structure(describe_structure(lut))
     st.code(buf.getvalue(), language="yaml")
     return 0
+
+# Show debug information on the main page,
+# since the sidebar is already created and the lookup_array_creator
+# which can be computation intensive
+# function is called after the sidebar is rendered.
+# Hence calling it twice does not make sense.
+def show_page_debug_info(indep_vars_range=None,
+                         dep_var_range=None,
+                         indep_vars=None,
+                         dep_var=None):
+    if st.session_state.get("debug_mode_selector"):
+        with st.expander("Debug Info", expanded=True):
+            st.write(f"Variables: {indep_vars}, {dep_var}")
+            st.write(f"Independent variable Array shape: {safe_shape(indep_vars_range)}")
+            st.write("Independent variable Array value:", indep_vars_range)
+            st.write(f"Dependent variable Array shape: {safe_shape(dep_var_range)}")
+            st.write("Dependent variable Array value: ",dep_var_range)
+
+def safe_shape(arr):
+    """
+    Return np.shape(arr) or None if arr is None.
+    Able to handle list and dict whose elements are np.ndarray
+    This is a utility function to avoid TypeError when arr is None.
+    """
+    if isinstance(arr, np.ndarray):
+        return np.shape(arr)
+    elif isinstance(arr, list):
+        filtered = [np.shape(elem) if isinstance(elem, np.ndarray) else None for elem in arr]
+        return filtered
+    elif isinstance(arr, dict):
+        st.write("Here")
+        for elem in arr.items():
+            st.write(f"{type(elem)}")
+        filtered = [
+            np.shape(elem) if isinstance(elem, np.ndarray) else None for elem in arr.items()
+            ]
+        return filtered
+    else:
+        return None
