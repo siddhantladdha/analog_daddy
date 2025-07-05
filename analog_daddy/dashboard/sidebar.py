@@ -46,12 +46,6 @@ def render_sidebar():
                 show_debug_info(
                     lut_roots,
                     lut_metadata,
-                    [
-                        st.session_state.get("selected_device_type_0"),
-                        st.session_state.get("selected_device_type_1"),
-                    ],
-                    st.session_state.get("selected_independent_var"),
-                    st.session_state.get("selected_dependent_var"),
                 )
 
     return lut_roots, status_msgs, lut_metadata

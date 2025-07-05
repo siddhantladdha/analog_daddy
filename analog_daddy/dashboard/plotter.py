@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 import streamlit as st
 import numpy as np
 import plotly.graph_objs as go
@@ -6,7 +6,7 @@ from parse_si import parse_text_for_scientific_or_si_prefix as parse_si
 from parse_si import format_si_or_scientific as disp_si
 from analog_daddy.look_up import look_up
 
-def state_dict_creator(lut_roots: List[Any]) -> Dict[str, Any]:
+def state_dict_creator(lut_roots: List[Any], debug_mode: Optional[bool] = False) -> Dict[str, Any]:
     """
     Create a dictionary of LUT roots and session state variables
     for use in the lookup_array_creator function.
@@ -27,8 +27,10 @@ def state_dict_creator(lut_roots: List[Any]) -> Dict[str, Any]:
             step_mode = state_dict[f"{indep_var}_step_mode"]
             state_dict[f"{indep_var}_step_or_n"] = parse_si(st.session_state.get(f"{indep_var}_{step_mode}"))
     except (ValueError, TypeError) as e:
-            st.error(f"Check input field: {e}")
-            st.stop()
+            if not debug_mode:
+                # If not in debug mode, show error and stop execution.
+                st.error(f"Check input field: {e}")
+                st.stop()
     return state_dict
 
 @st.cache_data
@@ -80,7 +82,8 @@ def array_creator(start, stop, step_or_n, step_mode):
     Used for generating arrays for plotting.
     """
     if step_mode == "step":
-        return np.arange(start, stop + step_or_n, step_or_n)
+        num_steps = int(round((stop - start) / step_or_n)) + 1
+        return np.linspace(start, stop, num_steps, endpoint=True)
     elif step_mode == "N-elements":
         if int(step_or_n) < 2:
             raise ValueError("N-elements must be at least 2.")

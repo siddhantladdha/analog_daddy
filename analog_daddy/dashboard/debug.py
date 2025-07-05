@@ -2,14 +2,13 @@ import io
 import contextlib
 import streamlit as st
 from analog_daddy.utils import pretty_print_structure, describe_structure
+from plotter import state_dict_creator
 
-@st.cache_data
-# Caching is used to avoid recomputing the debug information
+# @st.cache_data
+# Disabling caching since need to support session state updates.
 def show_debug_info(lut_roots=None,
                     lut_metadata=None,
-                    selected_device_type=None,
-                    selected_independent_var=None,
-                    selected_dependent_var=None):
+                    ):
     """
     Display debug information in the sidebar.
     This function is called when the debug mode is enabled.
@@ -27,22 +26,17 @@ def show_debug_info(lut_roots=None,
         with st.expander("LUT Metadata Structure", expanded=False):
             st.write(lut_metadata)
 
-    # Selected device type, Independent and Dependent Variable
-    # if the ui elements are not created, then the state value is None.
-    # Hence assigning an [] to the values in None.
     with st.expander(
-        "Selected Values",
+        "Session State",
         expanded=True):
-        st.write(
-                (
-                f"- Device Type: "
-                f"{[x for x in (selected_device_type or []) if x is not None]}\n"
-                f"- Independent variable: "
-                f"{[x for x in (selected_independent_var or []) if x is not None]}\n"
-                f"- Dependent Variable: "
-                f"{selected_dependent_var if selected_dependent_var is not None else ''}\n"
-                )
+        # Get the live session state and filter out lut_roots
+        # since it is already displayed in the LUT Root Structure.
+        session_state_dict = state_dict_creator(
+            lut_roots=lut_roots,
+            debug_mode=True
         )
+        filtered_dict = {k: v for k, v in session_state_dict.items() if k != "lut_roots"}
+        st.json(filtered_dict)
     return 0
 
 # Caching used since this function traverses the entire LUT
