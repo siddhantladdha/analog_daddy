@@ -6,6 +6,16 @@ from parse_si import parse_text_for_scientific_or_si_prefix as parse_si
 from parse_si import format_si_or_scientific as disp_si
 from analog_daddy.look_up import look_up
 
+DRACULA_COLOR_BANK = [
+                    "#ff79c6",
+                    "#8be9fd",
+                    "#50fa7b",
+                    "#bd93f9",
+                    "#ffb86c",
+                    "#f1fa8c",
+                    "#ff5555"
+                ]
+
 def state_dict_creator(lut_roots: List[Any], debug_mode: Optional[bool] = False) -> Dict[str, Any]:
     """
     Create a dictionary of LUT roots and session state variables
@@ -20,6 +30,8 @@ def state_dict_creator(lut_roots: List[Any], debug_mode: Optional[bool] = False)
         "selected_dependent_var": st.session_state.get("selected_dependent_var"),
     }
     try:
+        state_dict["gs_default"] = parse_si(st.session_state.get("gs_default"))
+        state_dict["length_default"] = parse_si(st.session_state.get("length_default"))
         for idx, indep_var in enumerate(state_dict.get("selected_independent_var", [])):
             state_dict[f"{indep_var}_start"] = parse_si(st.session_state.get(f"{indep_var}_start"))
             state_dict[f"{indep_var}_stop"] = parse_si(st.session_state.get(f"{indep_var}_stop"))
@@ -76,6 +88,14 @@ def ratio_slash_to_underscore(s: str) -> str:
     """
     return s.replace("/", "_")
 
+def ratio_underscore_to_slash(s: str) -> str:
+    """
+    Convert a string with underscores to slash.
+    Used for formatting variable to from the lookup
+    utility back to user.
+    """
+    return s.replace("_", "/")
+
 def array_creator(start, stop, step_or_n, step_mode):
     """
     Create an array based on the provided parameters.
@@ -118,12 +138,24 @@ def lookup_array_creator(state_dict: Dict[str, Any]):
     dep_var = ratio_slash_to_underscore(state_dict.get("selected_dependent_var", []))
     dep_var_range_dict = {}
 
-    # need to pass a default value for gs since the look_up
-    # function defaults it to a 1-D array.
-    # this will get overwritten if the indep_vars has a "gs" key.
+    mode_3_lookup_forced_flag = False
+    # need to pass a default value for gs and length
+    # if these variables are sweeped, the value is overwritten
+    # this is needed since the look_up
+    # function defaults it to a 1-D array w.r.t VGS sweep,
+    # which returns a 2-D array for even single variable lookup.
     kwargs = {}
-    kwargs.update({"gs": 0})
+    kwargs.update({"gs": state_dict.get("gs_default", 0)})
+    kwargs.update({"length": state_dict.get("length_default", 0)})
     kwargs.update({indep_vars[0]: indep_vars_range[0]})
+    # If any of the independent variables is a ratio,
+    # change dep_var to ratio if it is not a ratio.
+    if any("_" in var for var in indep_vars) and "_" not in dep_var:
+        # then force lookup in mode=3 (outvar is a ratio).
+        # just change to to dep_var/w ratio so that
+        # we can multiply it with w after lookup is completed.
+        dep_var = dep_var + "_" + "w"
+        mode_3_lookup_forced_flag = True
     # iterate over each LUT root
     for idx, lut_root_val in enumerate(lut_roots):
         if len(indep_vars) == 1:
@@ -149,6 +181,17 @@ def lookup_array_creator(state_dict: Dict[str, Any]):
                         dep_var,
                         **kwargs)))
             dep_var_range_dict[f"{idx}"] = np.array(dep_var_range_dict[f"{idx}"])
+
+        if mode_3_lookup_forced_flag:
+            # If the lookup was forced in mode 3,
+            # then we need to multiply the result with w.
+            # This is done to ensure that the user receives the result
+            # they asked for.
+            dep_var_range_dict[f"{idx}"] = (
+                dep_var_range_dict[f"{idx}"] *
+                lut_root_val[state_dict.get("selected_device_type")[idx]]["w"]
+                )
+            dep_var = dep_var.split("_",1)[0]
     return indep_vars_range, dep_var_range_dict, indep_vars, dep_var
 
 @st.cache_data
@@ -169,6 +212,7 @@ def plot_lookup_result(
     """
     dep_var_range = dep_var_range["0"]
     fig = go.Figure()
+    fig.update_layout(colorway=DRACULA_COLOR_BANK)
     if len(indep_vars) == 1:
         fig.add_trace(
             go.Scatter(
@@ -179,8 +223,8 @@ def plot_lookup_result(
         # Add metadata to the figure
         fig.update_layout(
             title=f'Plot of {dep_var} vs {indep_vars[0]}',
-            xaxis_title=f'{indep_vars[0]}',
-            yaxis_title=f'{dep_var}'
+            xaxis_title=f'{ratio_underscore_to_slash(indep_vars[0])}',
+            yaxis_title=f'{ratio_underscore_to_slash(dep_var)}'
             )
     elif len(indep_vars) == 2:
         for idx, param_var in enumerate(indep_vars_range[1]):
@@ -189,12 +233,12 @@ def plot_lookup_result(
                     x=indep_vars_range[0],
                     y=dep_var_range[idx],
                     mode='lines',
-                    name=f'{indep_vars[1]}={disp_si(param_var, precision=3)}'
+                    name=f'{indep_vars[1]} = {disp_si(param_var, precision=3)}'
                     ))
         # Add metadata to the figure
         fig.update_layout(
             title=f'Plot of {dep_var} vs {indep_vars[0]} for Parametric {indep_vars[1]}',
-            xaxis_title=f'{indep_vars[0]}',
-            yaxis_title=f'{dep_var}')
+            xaxis_title=f'{ratio_underscore_to_slash(indep_vars[0])}',
+            yaxis_title=f'{ratio_underscore_to_slash(dep_var)}')
 
     st.plotly_chart(fig, use_container_width=True)

@@ -42,7 +42,8 @@ def variable_selection_table(lut_metadata_elem=None, selected_device_type_elem=N
     Mutual exclusivity between the independent and the dependent variable
     is maintained at top-level using st.stop()
     """
-    st.multiselect(
+    col1, col2 = st.columns([2,1])
+    col1.multiselect(
         textwrap.dedent("""\
                         **Independent variables**
                         (Choose upto two variables)\n
@@ -54,6 +55,22 @@ def variable_selection_table(lut_metadata_elem=None, selected_device_type_elem=N
         default=None,
         key="selected_independent_var",
         max_selections=2
+    )
+    col2.text_input(
+        "Value for gs:",
+        key="gs_default",
+        value=fmt_str_si(
+            lut_metadata_elem["independent_vars"][selected_device_type_elem]["gs"]["min"]
+        ),
+        disabled=("gs" in st.session_state.get("selected_independent_var", False))
+        )
+    col2.text_input(
+        "Value for length:",
+        key="length_default",
+        value=fmt_str_si(
+            lut_metadata_elem["independent_vars"][selected_device_type_elem]["length"]["min"]
+        ),
+        disabled=("length" in st.session_state.get("selected_independent_var", False))
     )
     st.selectbox(
         "**Dependent variable**",

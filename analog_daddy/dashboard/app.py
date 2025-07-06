@@ -72,9 +72,34 @@ if st.session_state.get("selected_dependent_var"):
 
     except ValueError as e:
         error_msg = str(e)
-        if "below the interpolation range's minimum value" in error_msg:
+        if (
+            "below the interpolation range's minimum value" in error_msg or
+            "above the interpolation range's maximum value" in error_msg or
+            "One of the requested xi is out of bounds in dimension" in error_msg
+        ):
             # Handle this specific ValueError
-            st.error(f"Input is below the allowed range.{error_msg}")
+            st.error(
+                (
+                    "One of the requested independent variables is out of bounds.\n\n"
+                    "Please check the input range for the independent variables.\n\n"
+                    "The following is the raw error message from look_up.\n\n"
+                    f"'ValueError: {error_msg}'"
+                )
+            )
+            st.stop()
+        elif (
+            "shape mismatch: objects cannot be broadcast to a single shape" in error_msg
+         ):
+            # Handle this specific ValueError
+            st.error(
+                (
+                    "A ratio based independent variable (gm/id, id/w) "
+                    "is not supported as a parametric variable.\n\n"
+                    "Use the ratio as the x-axis variable.\n\n"
+                    "The following is the raw error message from look_up.\n\n"
+                    f"'ValueError: {error_msg}'"
+                )
+            )
             st.stop()
         else:
             # Re-raise or handle other ValueErrors
