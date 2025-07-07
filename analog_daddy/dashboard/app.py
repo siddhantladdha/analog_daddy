@@ -107,7 +107,7 @@ if st.session_state.get("selected_dependent_var"):
 
 
     show_page_debug_info(indep_vars_range, dep_var_range_dict, indep_vars, dep_var)
-    plot_lookup_result(indep_vars_range, dep_var_range_dict, indep_vars, dep_var)
+    plot_lookup_result(indep_vars_range, dep_var_range_dict, indep_vars, dep_var, lut_metadata)
 else:
     st.error(
             (

@@ -158,12 +158,15 @@ def lookup_array_creator(state_dict: Dict[str, Any]):
         mode_3_lookup_forced_flag = True
     # iterate over each LUT root
     for idx, lut_root_val in enumerate(lut_roots):
+        device = state_dict.get("selected_device_type")[idx]
+        device_lut = lut_root_val.get(device, {})
+        default_w = device_lut.get("w", 0)
         if len(indep_vars) == 1:
             # Explicit conversion to np.ndarray
             # to ensure the return type is consistent.
             dep_var_range_dict[f"{idx}"] = np.array(look_up(
                         # device selection.
-                        lut_root_val[state_dict.get("selected_device_type")[idx]],
+                        device_lut,
                         # dependent variable selection.
                         dep_var,
                         **kwargs))
@@ -176,7 +179,7 @@ def lookup_array_creator(state_dict: Dict[str, Any]):
                 dep_var_range_dict[f"{idx}"].append(np.array(
                     look_up(
                         # device selection.
-                        lut_root_val[state_dict.get("selected_device_type")[idx]],
+                        device_lut,
                         # dependent variable selection.
                         dep_var,
                         **kwargs)))
@@ -187,11 +190,13 @@ def lookup_array_creator(state_dict: Dict[str, Any]):
             # then we need to multiply the result with w.
             # This is done to ensure that the user receives the result
             # they asked for.
-            dep_var_range_dict[f"{idx}"] = (
-                dep_var_range_dict[f"{idx}"] *
-                lut_root_val[state_dict.get("selected_device_type")[idx]]["w"]
-                )
-            dep_var = dep_var.split("_",1)[0]
+            dep_var_range_dict[f"{idx}"] *= default_w
+    # If mode_3_lookup_forced_flag is set, we need to remove the "_w" suffix
+    # need to do this outside the loop so that
+    # all the dep_var_range_dict values are calculated with _w suffix.
+    if mode_3_lookup_forced_flag:
+        dep_var = dep_var.split("_",1)[0]
+
     return indep_vars_range, dep_var_range_dict, indep_vars, dep_var
 
 @st.cache_data
@@ -199,7 +204,8 @@ def plot_lookup_result(
     indep_vars_range,
     dep_var_range,
     indep_vars: List[str],
-    dep_var: str
+    dep_var: str,
+    lut_metadata: Dict[str, Any]
 ) -> None:
     """
     Plot dep_var_range vs indep_var_range using Plotly in Streamlit.
@@ -210,35 +216,53 @@ def plot_lookup_result(
         indep_vars: Label for the independent variable.
         dep_var: Label for the dependent variable.
     """
-    dep_var_range = dep_var_range["0"]
+    line_styles = {
+    "0": "solid",
+    "1": "dot",
+    }
     fig = go.Figure()
-    fig.update_layout(colorway=DRACULA_COLOR_BANK)
-    if len(indep_vars) == 1:
-        fig.add_trace(
-            go.Scatter(
-                x=indep_vars_range[0],
-                y=dep_var_range,
-                mode='lines'
-                ))
-        # Add metadata to the figure
-        fig.update_layout(
-            title=f'Plot of {dep_var} vs {indep_vars[0]}',
-            xaxis_title=f'{ratio_underscore_to_slash(indep_vars[0])}',
-            yaxis_title=f'{ratio_underscore_to_slash(dep_var)}'
-            )
-    elif len(indep_vars) == 2:
-        for idx, param_var in enumerate(indep_vars_range[1]):
+    # Add common metadata to the figure
+    fig.update_layout(
+        colorway=DRACULA_COLOR_BANK,
+        title=(f'Plot of {dep_var} vs {indep_vars[0]} for '
+               f'{[val["Temperature/Corner"] for val in lut_metadata]}'),
+        xaxis_title=f'{ratio_underscore_to_slash(indep_vars[0])}',
+        yaxis_title=f'{ratio_underscore_to_slash(dep_var)}',
+        showlegend=True,
+        xaxis_tickformat=".3s",
+        yaxis_tickformat=".3s",
+        legend={
+                "groupclick": "toggleitem"
+            }
+        )
+    for key, dep_var_range_elem in dep_var_range.items():
+        corner = lut_metadata[int(key)]['Temperature/Corner']
+        if len(indep_vars) == 1:
             fig.add_trace(
                 go.Scatter(
                     x=indep_vars_range[0],
-                    y=dep_var_range[idx],
+                    y=dep_var_range_elem,
                     mode='lines',
-                    name=f'{indep_vars[1]} = {disp_si(param_var, precision=3)}'
+                    name=f"{corner}"
                     ))
-        # Add metadata to the figure
-        fig.update_layout(
-            title=f'Plot of {dep_var} vs {indep_vars[0]} for Parametric {indep_vars[1]}',
-            xaxis_title=f'{ratio_underscore_to_slash(indep_vars[0])}',
-            yaxis_title=f'{ratio_underscore_to_slash(dep_var)}')
+        elif len(indep_vars) == 2:
+            for idx, param_var in enumerate(indep_vars_range[1]):
+                fig.add_trace(
+                    go.Scatter(
+                        x=indep_vars_range[0],
+                        y=dep_var_range_elem[idx],
+                        mode='lines',
+                        name=f"{indep_vars[1]} = {disp_si(param_var, precision=3)}",
+                        legendgroup=corner,
+                        legendgrouptitle_text=f"{corner}",
+                        line={
+                            "dash": line_styles.get(key)
+                        }
+                        ))
+            # Update the title for parametric case.
+            fig.update_layout(
+                title=(f'Plot of {dep_var} vs {indep_vars[0]} with {indep_vars[1]} parameter for '
+                        f'{[val["Temperature/Corner"] for val in lut_metadata]}'),
+            )
 
     st.plotly_chart(fig, use_container_width=True)
