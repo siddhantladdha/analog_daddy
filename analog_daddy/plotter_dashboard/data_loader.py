@@ -25,7 +25,7 @@ def load_lut_from_bytes(file_bytes: bytes) -> Any:
     """
     return np.load(BytesIO(file_bytes), allow_pickle=True).item()
 
-def load_lut_files() -> Tuple[List[Any], List[str], List[dict]]:
+def load_lut_files(accept_multiple_files: bool = True) -> Tuple[List[Any], List[str], List[dict]]:
     """
     Handles file upload and LUT loading logic for the dashboard.
     Returns a tuple of (list of loaded LUT roots, list of status messages).
@@ -41,14 +41,21 @@ def load_lut_files() -> Tuple[List[Any], List[str], List[dict]]:
     if 'lut_roots' not in st.session_state:
         st.session_state.lut_roots = []
 
+    if accept_multiple_files:
+        upload_message = "Upload up to two numpy (*.npy*) files"
+    else:
+        upload_message = "Upload a numpy (*.npy*) file"
     uploaded_files = st.file_uploader(
-        "Upload up to two numpy (*.npy*) files",
+        upload_message,
         type=["npy"],
-        accept_multiple_files=True,
+        accept_multiple_files=accept_multiple_files,
         key="npy_uploader"
     )
 
     if uploaded_files:
+        # Always make uploaded_files a list
+        if not accept_multiple_files:
+            uploaded_files = [uploaded_files]
         if len(uploaded_files) > 2:
             status_msgs.append("Please upload no more than two .npy files.")
         else:
