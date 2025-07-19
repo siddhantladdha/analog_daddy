@@ -91,6 +91,9 @@ def load_lut_files() -> Tuple[List[Any], List[str], List[dict]]:
             except ValueError as e:
                 status_msgs.append(f"Failed to load {file.name}: {e}")
             except Exception as e:
+                # I know this is a broad exception, but it is used to catch
+                # unexpected errors.
+                # and is dealt with at top-level to avoid breaking the dashboard.
                 status_msgs.append(f"Failed to load {file.name}: {e}")
             del file
     else:

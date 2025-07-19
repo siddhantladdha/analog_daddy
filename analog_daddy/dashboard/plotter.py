@@ -35,14 +35,18 @@ def state_dict_creator(lut_roots: List[Any], debug_mode: Optional[bool] = False)
         for idx, indep_var in enumerate(state_dict.get("selected_independent_var", [])):
             state_dict[f"{indep_var}_start"] = parse_si(st.session_state.get(f"{indep_var}_start"))
             state_dict[f"{indep_var}_stop"] = parse_si(st.session_state.get(f"{indep_var}_stop"))
-            state_dict[f"{indep_var}_step_mode"] = st.session_state.get(f"var_step_mode_selector_{idx}")
+            state_dict[
+                f"{indep_var}_step_mode"
+                ] = st.session_state.get(f"var_step_mode_selector_{idx}")
             step_mode = state_dict[f"{indep_var}_step_mode"]
-            state_dict[f"{indep_var}_step_or_n"] = parse_si(st.session_state.get(f"{indep_var}_{step_mode}"))
+            state_dict[
+                f"{indep_var}_step_or_n"
+                ] = parse_si(st.session_state.get(f"{indep_var}_{step_mode}"))
     except (ValueError, TypeError) as e:
-            if not debug_mode:
-                # If not in debug mode, show error and stop execution.
-                st.error(f"Check input field: {e}")
-                st.stop()
+        if not debug_mode:
+            # If not in debug mode, show error and stop execution.
+            st.error(f"Check input field: {e}")
+            st.stop()
     return state_dict
 
 @st.cache_data

@@ -7,7 +7,6 @@ Utility functions for checking
 fixing one, selects the other's value.
 
 """
-import numpy as np
 import streamlit as st
 
 def mutual_exclusivity_check(selected_independent_var, selected_dependent_var) -> None:
