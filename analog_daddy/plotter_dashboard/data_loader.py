@@ -1,12 +1,11 @@
 """
 data_loader.py
 
-This module provides functions for handling file uploads and LUT (Lookup Table) loading
-for the Analog Daddy Streamlit dashboard. All file processing, session state management,
-and error handling related to LUT files should be implemented here.
-In addition, it includes functions to build metadata for the LUTs,
-including device types, temperature/corner, independent and dependent variables,
-and design variables with their min/max/step values.
+Handles file uploads and LUT (Lookup Table) loading for the dashboard.
+Provides functions for reading .npy files, managing session state, and building LUT metadata.
+The LUT metadata contains device type, temperature/corner, independent/dependent variables
+and the design variables with min/max/step values.
+All LUT-related file processing and error handling is implemented here.
 """
 
 from typing import List, Tuple, Any

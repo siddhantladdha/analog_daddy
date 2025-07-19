@@ -1,3 +1,12 @@
+"""
+app_plotter.py
+
+Main entry point for the Analog Daddy plotting dashboard.
+Handles Streamlit page configuration, sidebar rendering, device and variable selection,
+mutual exclusivity checks, and plotting logic. All dashboard controls and workflow
+are orchestrated here.
+"""
+
 import streamlit as st
 from sidebar import render_sidebar
 from selection_tables import device_selection_table, variable_selection_table, input_range_table
@@ -6,8 +15,8 @@ from debug import show_page_debug_info
 from variable_logic_checker import mutual_exclusivity_check, gm_id_id_w_mutual_exclusivity_check
 
 st.set_page_config(
-    page_title="Analog Daddy Dashboard",
-    page_icon="🧑‍🔬",
+    page_title="Plotting Dashboard",
+    page_icon="📈",
     layout="centered"
 )
 

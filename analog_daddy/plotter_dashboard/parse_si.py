@@ -1,3 +1,11 @@
+"""
+parse_si.py
+
+Provides functions for parsing and formatting SI-prefixed and scientific notation values.
+Includes utilities for converting strings to floats and formatting floats for display
+in the dashboard.
+"""
+
 import re
 
 def parse_text_for_scientific_or_si_prefix(value):

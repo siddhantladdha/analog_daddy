@@ -1,3 +1,11 @@
+"""
+metadata_utils.py
+
+Functions for building and extracting metadata from LUT roots for the dashboard.
+Handles device type, temperature/corner, variable min/max/step extraction,
+and design variable metadata.
+"""
+
 from typing import List
 import numpy as np
 import streamlit as st

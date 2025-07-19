@@ -1,3 +1,11 @@
+"""
+selection_tables.py
+
+Contains Streamlit UI functions for device and variable selection tables.
+Handles rendering of device type, temperature/corner, and variable selection controls,
+as well as input fields for independent and dependent variables.
+"""
+
 import textwrap
 import streamlit as st
 from parse_si import format_si_or_scientific as fmt_str_si

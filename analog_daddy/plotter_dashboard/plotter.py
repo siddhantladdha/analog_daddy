@@ -1,3 +1,12 @@
+"""
+plotter.py
+
+Provides functions for creating session state dictionary for easy access,
+generating arrays for independent variables, performing lookups, and plotting
+results using Plotly. Handles all visualization and data processing
+logic for the dashboard, including color theming and SI formatting.
+"""
+
 from typing import Any, Dict, List, Optional
 import streamlit as st
 import numpy as np

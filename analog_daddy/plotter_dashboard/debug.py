@@ -1,9 +1,17 @@
+"""
+debug.py
+
+Provides functions for displaying debug information in the dashboard and sidebar.
+Includes utilities for pretty-printing LUT structures, session state, and metadata.
+Handles debug mode UI and diagnostic output.
+"""
+
 import io
 import contextlib
 import streamlit as st
-from analog_daddy.utils import pretty_print_structure, describe_structure
 from plotter import state_dict_creator
 import numpy as np
+from analog_daddy.utils import pretty_print_structure, describe_structure
 
 # @st.cache_data
 # Disabling caching since need to support session state updates.
@@ -67,15 +75,17 @@ def st_pretty_print_lut(lut_roots=None):
     st.code(buf.getvalue(), language="yaml")
     return 0
 
-# Show debug information on the main page,
-# since the sidebar is already created and the lookup_array_creator
-# which can be computation intensive
-# function is called after the sidebar is rendered.
-# Hence calling it twice does not make sense.
 def show_page_debug_info(indep_vars_range=None,
                          dep_var_range_dict=None,
                          indep_vars=None,
                          dep_var=None):
+    """
+    Show debug information on the main page,
+    since the sidebar is already created and the lookup_array_creator
+    which can be computation intensive
+    function is called after the sidebar is rendered.
+    Hence calling it twice does not make sense.
+    """
     if st.session_state.get("debug_mode_selector"):
         with st.expander("Debug Info", expanded=True):
             st.write(f"Variables: {indep_vars}, {dep_var}")

@@ -1,3 +1,10 @@
+"""
+sidebar.py
+
+Defines the sidebar UI for the dashboard, including file upload, dashboard mode selection,
+advanced preferences, and debug panel. Orchestrates LUT loading and sidebar controls.
+"""
+
 import streamlit as st
 from data_loader import load_lut_files
 from debug import show_sidebar_debug_info
