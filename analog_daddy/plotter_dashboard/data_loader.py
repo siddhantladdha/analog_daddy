@@ -12,7 +12,7 @@ from typing import List, Tuple, Any
 from io import BytesIO
 import streamlit as st
 import numpy as np
-from metadata_utils import build_lut_metadata
+from analog_daddy.plotter_dashboard.metadata_utils import build_lut_metadata
 
 @st.cache_data(show_spinner=False)
 def load_lut_from_bytes(file_bytes: bytes) -> Any:

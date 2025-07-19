@@ -8,7 +8,7 @@ as well as input fields for independent and dependent variables.
 
 import textwrap
 import streamlit as st
-from parse_si import format_si_or_scientific as fmt_str_si
+from analog_daddy.plotter_dashboard.parse_si import format_si_or_scientific as fmt_str_si
 
 def device_selection_table(lut_metadata=None):
     """

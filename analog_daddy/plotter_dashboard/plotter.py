@@ -11,8 +11,10 @@ from typing import Any, Dict, List, Optional
 import streamlit as st
 import numpy as np
 import plotly.graph_objs as go
-from parse_si import parse_text_for_scientific_or_si_prefix as parse_si
-from parse_si import format_si_or_scientific as disp_si
+from analog_daddy.plotter_dashboard.parse_si import (
+    parse_text_for_scientific_or_si_prefix as parse_si
+)
+from analog_daddy.plotter_dashboard.parse_si import format_si_or_scientific as disp_si
 from analog_daddy.look_up import look_up
 
 DRACULA_COLOR_BANK = [

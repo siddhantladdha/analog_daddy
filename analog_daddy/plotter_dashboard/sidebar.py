@@ -6,8 +6,8 @@ advanced preferences, and debug panel. Orchestrates LUT loading and sidebar cont
 """
 
 import streamlit as st
-from data_loader import load_lut_files
-from debug import show_sidebar_debug_info
+from analog_daddy.plotter_dashboard.data_loader import load_lut_files
+from analog_daddy.plotter_dashboard.debug import show_sidebar_debug_info
 
 def render_sidebar():
     """

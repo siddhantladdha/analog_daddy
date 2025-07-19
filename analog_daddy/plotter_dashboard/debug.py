@@ -9,8 +9,8 @@ Handles debug mode UI and diagnostic output.
 import io
 import contextlib
 import streamlit as st
-from plotter import state_dict_creator
 import numpy as np
+from analog_daddy.plotter_dashboard.plotter import state_dict_creator
 from analog_daddy.utils import pretty_print_structure, describe_structure
 
 # @st.cache_data
