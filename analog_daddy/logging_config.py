@@ -16,16 +16,21 @@ def setup_logging():
     """
     Set up logging for the analog_daddy package. Logs are written to .logs/analog_daddy.log.
     Call this once at the entry point of your application.
+    Avoids adding duplicate handlers on Streamlit reruns.
     """
     log_dir = os.path.join(os.path.dirname(__file__), '..', '.logs')
     os.makedirs(log_dir, exist_ok=True)
     log_path = os.path.join(log_dir, 'analog_daddy.log')
-    logging.basicConfig(
-        filename=log_path,
-        level=logging.INFO,
-        format='%(asctime)s %(levelname)s %(message)s',
-        filemode='a'
-    )
+    logger = logging.getLogger()
+    # Only add handler if no handlers exist
+    if not logger.handlers:
+        file_handler = logging.FileHandler(log_path, mode='a')
+        file_handler.setLevel(logging.INFO)
+        formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+        file_handler.setFormatter(formatter)
+        logger.addHandler(file_handler)
+    if logger.level == logging.NOTSET:
+        logger.setLevel(logging.INFO)
 
 def st_log_print(msg, msg_type="info", stop=False):
     """
@@ -39,8 +44,6 @@ def st_log_print(msg, msg_type="info", stop=False):
     elif msg_type == "error":
         logging.error(msg)
         st.error(msg)
-        if stop:
-            st.stop()
     elif msg_type == "warning":
         logging.warning(msg)
         st.warning(msg)
@@ -50,5 +53,5 @@ def st_log_print(msg, msg_type="info", stop=False):
     else:
         logging.info(msg)
         st.info(msg)
-    if stop and type != "error":
+    if stop:
         st.stop()
