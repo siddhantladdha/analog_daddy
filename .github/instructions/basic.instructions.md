@@ -17,6 +17,9 @@ Please read and follow these guidelines to ensure consistency and maintainabilit
 - Follow PEP8 for all Python code.
 - Use clear, incremental commits and PRs for new features.
 - Make all the markdown generated compliant with markdownlint rules.
+- When trying to change the code, don't suggest formatting changes unless explicitly asked for.
+- Make sure the code you are writing isn't already present in the codebase and you are just not
+changing the formatting of the code.
 
 ## Dashboard Development
 
@@ -27,6 +30,8 @@ Please read and follow these guidelines to ensure consistency and maintainabilit
 wants to use custom HTML/CSS to achieve the task.
 - Group related widgets into functions (e.g., def filter_controls(): ...)
 - Use type hints and docstrings for all functions and classes.
+- When creating new module files create a docstring for it. When anything in
+  the module is changed, update the docstring to reflect the changes.
 - The dashboard is a frontend for the main package and lives in `analog_daddy/dashboard/` directory.
 - Use the following structure for scalable streamlit apps:
   - app.py: Streamlit app entry point
