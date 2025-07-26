@@ -27,6 +27,12 @@ def parse_text_for_scientific_or_si_prefix(value):
     except ValueError:
         pass
     # Try to parse as SI-prefixed value
+    # re.fullmatch: Ensures the entire string matches the pattern.
+    # ([-+]?[0-9]*\.?[0-9]+): Captures a number, possibly with a sign (- or +),
+    # optional digits before the decimal, optional decimal point, and at least one digit after.
+    # \s*: Allows for optional whitespace after the number.
+    # ([fpnumkMGT]?): Optionally captures a single SI prefix character (f, p, n, u, m, k, M, G, T).
+    # The pattern matches strings like "1.23k", "100", "-0.5u", "3.3".
     match = re.fullmatch(r'([-+]?[0-9]*\.?[0-9]+)\s*([fpnumkMGT]?)', value)
     if match:
         number, prefix = match.groups()
