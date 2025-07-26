@@ -10,6 +10,7 @@ Other modules should simply use the logging module; do not reconfigure logging e
 """
 import os
 import logging
+import streamlit as st
 
 def setup_logging():
     """
@@ -25,3 +26,29 @@ def setup_logging():
         format='%(asctime)s %(levelname)s %(message)s',
         filemode='a'
     )
+
+def st_log_print(msg, msg_type="info", stop=False):
+    """
+    Log the message and display it in Streamlit with the appropriate style.
+    type: 'info', 'success', 'warning', 'error', 'debug'
+    stop: If True, call st.stop() after displaying the message.
+    """
+    if msg_type == "success":
+        logging.info(msg)
+        st.success(msg)
+    elif msg_type == "error":
+        logging.error(msg)
+        st.error(msg)
+        if stop:
+            st.stop()
+    elif msg_type == "warning":
+        logging.warning(msg)
+        st.warning(msg)
+    elif msg_type == "debug":
+        logging.debug(msg)
+        st.info(msg)
+    else:
+        logging.info(msg)
+        st.info(msg)
+    if stop and type != "error":
+        st.stop()
