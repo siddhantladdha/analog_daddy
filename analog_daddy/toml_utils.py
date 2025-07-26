@@ -1,13 +1,15 @@
 import os
-import logging
-from typing import List, Dict, Any
+from typing import List, Dict, Any, KeysView
 import pandas as pd
 import tomlkit
 
-def circuit_toml_reader(lut_metadata: List = None, filepath: str = None) -> Dict[str, Any]:
+def circuit_toml_reader(
+        lut_metadata: List = None,
+        filepath: str = None,
+        required_keys: KeysView[str] = None) -> Dict[str, Any]:
     """
     Read the circuit configuration from a TOML file using tomlkit.
-    If no filepath is provided, use a default path.
+    If no filepath is provided, use a default path to read a sample TOML file.
     Performs the following checks
     1. if the file exists and is readable.
     2. if the file has all the necessary sections and keys.
@@ -15,9 +17,6 @@ def circuit_toml_reader(lut_metadata: List = None, filepath: str = None) -> Dict
     4. if the device types in the lut_metadata match the device types in the TOML file.
 
     """
-    # TODO:change the following eventually reading analog_daddy config file
-    # to avoid magic strings.
-    REQUIRED_KEYS = {"type", "length", "gm_id", "id", "w"}
     # If no filepath is provided, use a default path of demo_circuit.toml
     if filepath is None:
         filepath = os.path.join(
@@ -32,7 +31,6 @@ def circuit_toml_reader(lut_metadata: List = None, filepath: str = None) -> Dict
             toml_dict = dict(toml_doc)
     except FileNotFoundError as e:
         msg = f"The TOML file is not found: {filepath}"
-        logging.error(msg)
         raise FileNotFoundError(msg) from e
     # if st.session_state.get("debug_mode_selector"):
     #     with st.expander("TOML Debug Info", expanded=True):
@@ -43,20 +41,18 @@ def circuit_toml_reader(lut_metadata: List = None, filepath: str = None) -> Dict
             Either (A) Upload the correct LUT file or (B) If porting to a different technology,
             ensure the technology_info and the device types in TOML
             matches the target technology's Info and device types."""
-        logging.error(msg)
         raise ValueError(msg)
     # Convert the circuit part to DataFrame
     circuit_dict = {k: v for k, v in toml_dict.items() if k != "metadata"}
     # iterate over each device type in the LUT metadata
     for device_name, device_data in circuit_dict.items():
-        missing = REQUIRED_KEYS - device_data.keys()
+        missing = required_keys - device_data.keys()
         if missing:
             msg = (
                 f"The device: {device_name} in the TOML file is "
                 f"missing key(s): {missing}. "
                 "Please ensure all required keys are present in the TOML file."
             )
-            logging.error(msg)
             raise ValueError(msg)
 
         # Proceed if all required keys are present
@@ -68,7 +64,6 @@ def circuit_toml_reader(lut_metadata: List = None, filepath: str = None) -> Dict
                 f"in LUT uploaded. If porting please ensure initialising with any "
                 f"available device type."
             )
-            logging.error(msg)
             raise ValueError(msg)
     circuit_df = pd.DataFrame.from_dict(
                     circuit_dict, orient="index"
