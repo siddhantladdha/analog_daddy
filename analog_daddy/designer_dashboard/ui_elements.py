@@ -23,7 +23,7 @@ def lut_info_table(lut_metadata: Dict[str,Any] = None):
     st.dataframe(df, hide_index=True)
     return 0
 
-def circuit_bulk_editor(lut_metadata: Dict[str,Any] = None, filepath: str = None) -> dict:
+def circuit_bulk_editor(lut_metadata: Dict[str,Any] = None, filepath: str = None) -> pd.DataFrame:
     """
     Display a Streamlit data editor for bulk editing circuit/transistor data.
 
@@ -111,10 +111,11 @@ def circuit_bulk_editor(lut_metadata: Dict[str,Any] = None, filepath: str = None
     st.write("**Circuit Data Editor**")
     try:
         circuit_df = circuit_toml_reader(lut_metadata, filepath, required_keys)
+        filtered_circuit_df = circuit_df[circuit_df.columns.intersection(column_config_dict.keys())]
     except (FileNotFoundError, ValueError) as e:
         st_log_print(str(e), msg_type="error", stop=True)
     edited_df = st.data_editor(
-        circuit_df,
+        filtered_circuit_df,
         column_config=column_config_dict,
         hide_index=True,
         num_rows="dynamic",
