@@ -3,7 +3,7 @@ import streamlit as st
 from analog_daddy.designer_dashboard.sidebar import render_sidebar
 from analog_daddy.designer_dashboard.ui_elements import lut_info_table, circuit_bulk_editor
 from analog_daddy.logging_config import setup_logging, st_log_print
-
+from analog_daddy.designer_dashboard.debug import show_page_debug_info
 setup_logging()
 
 st.set_page_config(
@@ -41,7 +41,7 @@ lut_metadata = lut_metadata_list[0]
 
 lut_info_table(lut_metadata)
 with st.form("my_form"):
-    circuit_bulk_editor(lut_metadata,filepath = os.path.join(
+    edited_df = circuit_bulk_editor(lut_metadata,filepath = os.path.join(
                             os.path.dirname(__file__),
                             "..", "..", ".config", "demo_circuit.toml"
                             # "..", "..", ".config", "demo_circuit_different.toml"
@@ -50,3 +50,5 @@ with st.form("my_form"):
 
 if submit_clicked:
     st_log_print("Circuit lookup submitted.", msg_type="success")
+    show_page_debug_info(edited_df)
+

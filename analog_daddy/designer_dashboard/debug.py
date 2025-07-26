@@ -8,6 +8,7 @@ Handles debug mode UI and diagnostic output.
 """
 
 import streamlit as st
+import pandas as pd
 # Reuse to keep file small.
 from analog_daddy.plotter_dashboard.debug import st_pretty_print_lut
 # Redefine to use the designer_dashboard version.
@@ -48,22 +49,14 @@ def show_sidebar_debug_info(lut_roots=None,
         st.json(filtered_dict)
     return 0
 
-# Might reuse later.
-# def show_page_debug_info(indep_vars_range=None,
-#                          dep_var_range_dict=None,
-#                          indep_vars=None,
-#                          dep_var=None):
-#     """
-#     Show debug information on the main page,
-#     since the sidebar is already created and the lookup_array_creator
-#     which can be computation intensive
-#     function is called after the sidebar is rendered.
-#     Hence calling it twice does not make sense.
-#     """
-#     if st.session_state.get("debug_mode_selector"):
-#         with st.expander("Debug Info", expanded=True):
-#             st.write(f"Variables: {indep_vars}, {dep_var}")
-#             st.write(f"Independent variable Array shape: {indep_vars_range}")
-#             st.write("Independent variable Array value:", indep_vars_range)
-#             st.write(f"Dependent variable Array shape: {dep_var_range_dict}")
-#             st.write("Dependent variable Array value: ",dep_var_range_dict)
+def show_page_debug_info(edited_df: pd.DataFrame):
+    """
+    Show debug information on the main page,
+    since the sidebar is already created and the lookup_array_creator
+    which can be computation intensive
+    function is called after the sidebar is rendered.
+    Hence calling it twice does not make sense.
+    """
+    if st.session_state.get("debug_mode_selector"):
+        with st.expander("Debug Info", expanded=True):
+            st.dataframe(edited_df)
