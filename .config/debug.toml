@@ -1,0 +1,53 @@
+[metadata]
+title = "Demo Circuit TOML Configuration for battle-testing/debugging circuit data_editor"
+version = 1.0
+name="Five Transistor OTA"
+# technology_info = "NCSU FinFET spectre"
+technology_info = "freepdk 45nm ngspice"
+# This is a TOML configuration file for a demo circuit.
+# This is read by the circuit data_editor, and has information
+# about the circuit components, their properties, and other metadata.
+# Any numerical values can be in scientific notation or SI prefixes.
+# Any opt_* parameters are optional, and can be used to specify targets for optimization.
+# Currently the logic for optimization is not made available.
+# This is a placeholder.
+# Optional target optimization parameters can be added here.
+# These are not required, but can be used to specify targets for optimization.
+[gm_pair] # <-- Name of the transistor.
+# type = "nmos_ulvt" # <-- Device type (Technology dependent).
+type = "nmos_vth" # <-- Device type (Technology dependent).
+length = "45n"
+gm_id = "15"
+id = "1e-6"
+# idis = "1e-6"
+# waa = "1u"
+w = "1u"
+description = "Just in case you want to be more detailed."
+opt_param = "gm" # <-- Optimization target parameter. # Optional.
+opt_param_target = "1m" # <-- Optimization parameter target value. # Optional.
+opt_param_tolerance = "0.1" # <-- Optimization parameter tolerance # Optional.
+opt_param_value = "1.1m" # <-- Post-optimization parameter value # Optional.
+
+[load_pair]
+type = "pmos_vth"
+length = "45n"
+gm_id = "15.2"
+id = "1e-6"
+w = "1u"
+description = "Just in case you want to be more detailed."
+opt_param = "gds" # <-- Optimization target parameter. # Optional.
+opt_param_target = "0.1" # <-- Optimization parameter target value. # Optional.
+opt_param_tolerance = "0.01" # <-- Optimization parameter tolerance # Optional.
+opt_param_value = "0.99" # <-- Post-optimization parameter value # Optional.
+
+[tail_current_source]
+type = "nmos_vth"
+length = "45n"
+gm_id = "5"
+id = "2u"
+w = "1u"
+description = "Just in case you want to be more detailed."
+opt_param = "gds" # <-- Optimization target parameter. # Optional.
+opt_param_target = "0.1" # <-- Optimization parameter target value. # Optional.
+opt_param_tolerance = "0.01" # <-- Optimization parameter tolerance # Optional.
+opt_param_value = "0.99" # <-- Post-optimization parameter value # Optional.

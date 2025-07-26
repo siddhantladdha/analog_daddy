@@ -71,4 +71,13 @@ and use CSS variables for easy configurable theming.
 for referencing the plotting functions as well.
 - To understand the `.npy` structure of the LUT, refer to the `docs/usage_demo.ipynb` notebook.
 
+## Logging Best Practices
+
+- All logging output should be written to files in the `.logs/` directory (which is gitignored).
+- Always log errors and important events to a file for debugging and audit purposes.
+- When an error occurs, log the error and also print or display the error message to the user (e.g., using `print`, `st.error`, etc.).
+- Use `str(e)` for exception messages to ensure clear user feedback.
+- Do not commit log files to version control; only the `.logs/` directory structure should be tracked (with a `.gitkeep` file if needed).
+- If you come across a code snippet which does not follow these logging practices, please update it to conform to the above standards.
+
 _This file is intended to reduce repeated questions and ensure a smooth workflow for all contributors using Copilot or other AI tools._
