@@ -112,7 +112,7 @@ borderColor = "#bd93f9"
 # The color of the border around dataframes and tables.
 # If no dataframe border color is set, Streamlit uses `theme.borderColor`
 # instead.
-# dataframeBorderColor =
+dataframeBorderColor = "#ffb86c"
 
 # Whether to show a border around input widgets.
 # showWidgetBorder =
