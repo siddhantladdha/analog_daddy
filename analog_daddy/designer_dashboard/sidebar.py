@@ -17,6 +17,7 @@ import streamlit as st
 from analog_daddy.plotter_dashboard.data_loader import load_lut_files
 # Need to create new clone since need a modified debug_info.
 from analog_daddy.designer_dashboard.debug import show_sidebar_debug_info
+from analog_daddy.config import CONFIG
 
 def render_sidebar():
     """
@@ -40,7 +41,8 @@ def render_sidebar():
                 "Select Dashboard Mode:",
                 [0, 1],
                 format_func=lambda x: dashboard_mode_options[x],
-                index=1,  # 0 for "User Mode", 1 for "Debug Mode"
+                # 0 for "User Mode", 1 for "Debug Mode"
+                index=1 if CONFIG["dashboard"]["debug_mode"] else 0,
                 key="debug_mode_selector"
             )
 
