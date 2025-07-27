@@ -1,0 +1,81 @@
+# This config file allows you to configure defaults for the analog daddy tool
+# and the dashboard.
+# Unsupported options are marked as such and will not be applied.
+
+# The following section can be used to configure the tool settings.
+[tool]
+METHOD_KEY = "METHOD"
+WARNING_KEY = "WARNING"
+# The importer will output information about the imported data in real-time.
+IMPORTER_VERBOSE = true
+
+######### BEGIN DASHBOARD CONFIGURATION #########
+# The following section can be used to configure the dashboard settings.
+[dashboard]
+# The following settings can be changed at runtime.
+# However, use this file to set the defaults.
+# Options: "centered", "wide".
+layout = "centered"
+# Options: "expanded", "collapsed", "auto".
+initial_sidebar_state="expanded"
+# If set to true, the dashboard will run in debug mode by default.
+debug_mode = false
+######### END OF DASHBOARD CONFIGURATION #########
+
+# The following section are used if the settings for the given technology cannot
+# be found. Copy and modify this section to create a new technology configuration.
+[example_technology_settings]
+# The technology_info field will be used to write the 'info' field in the
+# LUT. And while reading the LUT, it will be used to load the correct configuration
+# corresponding to the LUT loaded.
+technology_info = "GPDK 45nm spectre"
+# Constants to avoid magic strings throughout the python code.
+# As well as to make sure the code functions for all technologies.
+PARAMETER_TAG = "Parameters:"
+GM_KEY_START = "gm_"
+LENGTH_KEY = "length"
+GS_KEY = "gs"
+DS_KEY = "ds"
+SB_KEY = "sb"
+DB_KEY = "db"
+GB_KEY = "gb"
+# Supply Voltage (Vdd) in Volts.
+VDD = "1.2"
+# for technologies that only allow stacking and multipliers.
+# Is the length/width an integer?
+IS_INTEGER = false
+# Length Range (in m)
+L_MIN = "45n"
+L_MAX = "10u"
+LENGTH_INCREMENT = "10n"
+# Width Range (in m) (Per-Finger)
+W_MIN = "90n"
+W_MAX = "1m"
+# Voltage Step Size = 20 mV. This is the default step size
+# which will be selected for our voltage sweeps.
+# Note that decreasing sizes would not lead to more accurate results
+# since the lookup function interpolates.
+VOLTAGE_STEP_SIZE = "20mv"
+
+[freepdk_45nm]
+technology_info = "freepdk 45nm ngspice"
+PARAMETER_TAG = "Parameters:"
+GM_KEY_START = "gm_"
+LENGTH_KEY = "length"
+GS_KEY = "gs"
+DS_KEY = "ds"
+SB_KEY = "sb"
+DB_KEY = "db"
+GB_KEY = "gb"
+# Max Supply Voltage (Vdd) in Volts
+VDD = "1"
+# FinFET technologies only allow stacking and multipliers.
+IS_INTEGER = false
+# Length Range (in m)
+L_MIN = "45n"
+L_MAX = "10u"
+LENGTH_INCREMENT = "10n"
+# Width Range (in m) (Per-Finger)
+W_MIN = "90n"
+W_MAX = "1m"
+VOLTAGE_STEP_SIZE = "20mv"
