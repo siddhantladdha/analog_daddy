@@ -26,25 +26,25 @@ def setup_logging(log_dir: str = None) -> None:
         os.makedirs(log_dir, exist_ok=True)
     except PermissionError as e:
         msg = (
-            f"Permission denied while creating log directory: {log_dir}.\n"
+            f"Permission denied while creating log directory: {log_dir}.  \n"
             f"Complete error: {e}"
         )
         raise PermissionError(msg) from e
     except FileExistsError as e:
         msg = (
-            f"A file (not a directory) exists at the log directory path: {log_dir}.\n"
+            f"A file (not a directory) exists at the log directory path: {log_dir}.  \n"
             f"Complete error: {e}"
         )
         raise FileExistsError(msg) from e
     except OSError as e:
         msg = (
-            f"OS error while creating log directory: {log_dir}.\n"
+            f"OS error while creating log directory: {log_dir}.  \n"
             f"Complete error: {e}"
         )
         raise OSError(msg) from e
     except Exception as e:
         msg = (
-            f"An unexpected error occurred while creating log directory: {log_dir}\n"
+            f"An unexpected error occurred while creating log directory: {log_dir}  \n"
             f"Complete error: {e}"
             f"Please contact the developer for support using Get Help in the dropdown menu."
         )
