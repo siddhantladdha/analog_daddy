@@ -4,12 +4,32 @@ from analog_daddy.designer_dashboard.sidebar import render_sidebar
 from analog_daddy.designer_dashboard.ui_elements import lut_info_table, circuit_bulk_editor
 from analog_daddy.logging_config import setup_logging, st_log_print
 from analog_daddy.designer_dashboard.debug import show_page_debug_info
-setup_logging()
+
+try:
+    # define CONFIG as a global variable to be used in the app
+    # and within submodules.
+    # import within try-catch to handle any import errors gracefully.
+    # you can now just use
+    # from analog_daddy.config import CONFIG
+    # everywhere else since the exception handling is done here.
+    from analog_daddy.config import CONFIG
+    setup_logging(
+        os.path.join(os.path.dirname(__file__), '..', '.logs'))
+except Exception as e:
+    st_log_print(str(e), msg_type="error", stop=True)
 
 st.set_page_config(
     page_title="Designer Dashboard",
     page_icon="🧑‍🔬",
-    layout="centered"
+    layout=CONFIG["dashboard"]["layout"],
+    initial_sidebar_state=CONFIG["dashboard"]["initial_sidebar_state"],
+    menu_items={
+        'Get Help':
+        'https://github.com/siddhantladdha/analog_daddy?tab=readme-ov-file#provide-helpfeedback',
+        'About':
+        'Find more information about the Analog Daddy project at '
+        'https://github.com/siddhantladdha/analog_daddy'
+    }
 )
 
 # Sidebar: Dashboard Controls
