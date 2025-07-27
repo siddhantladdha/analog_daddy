@@ -3,13 +3,56 @@ from typing import List, Dict, Any, KeysView
 import pandas as pd
 import tomlkit
 
+def config_toml_reader(filepath: str = None) -> Dict[str, Any]:
+    """
+    Read the TOML configuration file and return it as a dictionary.
+    If no filepath is provided, defaults to a standard config path
+    at ~/.analog_daddy/config/config.toml
+    If the file does not exist, raises a FileNotFoundError.
+    """
+    if filepath is None:
+        filepath = os.path.expanduser('~/.analog_daddy/config/config.toml')
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            # toml file is now loaded as a TOMLDocument (preserves comments)
+            toml_doc = tomlkit.load(f)
+            # Convert to dict for downstream compatibility
+            return dict(toml_doc)
+    except FileNotFoundError as e:
+        msg = (
+            f"The TOML file is not found at: {filepath}\n."
+            f"Complete error: {e}"
+        )
+        raise FileNotFoundError(msg) from e
+    except PermissionError as e:
+        msg = (
+            f"Permission denied when trying to read the TOML file at {filepath}\n"
+            f"Complete error: {e}"
+        )
+        raise PermissionError(msg) from e
+    except OSError as e:
+        msg = (
+            f"OS error when trying to read the TOML file at {filepath}.\n"
+            f"Complete error: {e}"
+        )
+        raise OSError(msg) from e
+    except Exception as e:
+        msg = (
+            f"An unexpected error occurred while reading the TOML file at {filepath}\n"
+            f"Complete error: {e}"
+            f"Please contact the developer for support using Get Help in the dropdown menu."
+        )
+        raise RuntimeError(msg) from e
+
 def circuit_toml_reader(
         lut_metadata: List = None,
         filepath: str = None,
         required_keys: KeysView[str] = None) -> Dict[str, Any]:
     """
     Read the circuit configuration from a TOML file using tomlkit.
-    If no filepath is provided, use a default path to read a sample TOML file.
+    If no filepath is provided, use the default path at
+    "~/.analog_daddy/config/demo_circuit.toml"
+    to read a sample TOML file.
     Performs the following checks
     1. if the file exists and is readable.
     2. if the file has all the necessary sections and keys.
@@ -19,10 +62,7 @@ def circuit_toml_reader(
     """
     # If no filepath is provided, use a default path of demo_circuit.toml
     if filepath is None:
-        filepath = os.path.join(
-                            os.path.dirname(__file__),
-                            "..", "..", ".config", "demo_circuit.toml"
-                            )
+        filepath = os.path.expanduser('~/.analog_daddy/config/demo_circuit.toml')
     try:
         with open(filepath, "r", encoding="utf-8") as f:
             # toml file is now loaded as a TOMLDocument (preserves comments)
@@ -32,9 +72,6 @@ def circuit_toml_reader(
     except FileNotFoundError as e:
         msg = f"The TOML file is not found: {filepath}"
         raise FileNotFoundError(msg) from e
-    # if st.session_state.get("debug_mode_selector"):
-    #     with st.expander("TOML Debug Info", expanded=True):
-    #         st.write(toml_dict)
     # Perform checks on the loaded TOML file
     if toml_dict.get("metadata", {}).get("technology_info", {}) != lut_metadata["Info"]:
         msg = """The technology_info in the TOML file does not match the LUT info.
