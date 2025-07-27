@@ -2,7 +2,10 @@ import os
 from typing import List, Dict, Any, KeysView
 import pandas as pd
 import tomlkit
+import streamlit as st
 
+# Using Streamlit's caching mechanism to avoid re-reading the file multiple times
+@st.cache_resource
 def config_toml_reader(filepath: str = None) -> Dict[str, Any]:
     """
     Read the TOML configuration file and return it as a dictionary.
@@ -20,25 +23,25 @@ def config_toml_reader(filepath: str = None) -> Dict[str, Any]:
             return dict(toml_doc)
     except FileNotFoundError as e:
         msg = (
-            f"The TOML file is not found at: {filepath}\n."
+            f"The TOML file is not found at: {filepath}  \n"
             f"Complete error: {e}"
         )
         raise FileNotFoundError(msg) from e
     except PermissionError as e:
         msg = (
-            f"Permission denied when trying to read the TOML file at {filepath}\n"
+            f"Permission denied when trying to read the TOML file at {filepath}  \n"
             f"Complete error: {e}"
         )
         raise PermissionError(msg) from e
     except OSError as e:
         msg = (
-            f"OS error when trying to read the TOML file at {filepath}.\n"
+            f"OS error when trying to read the TOML file at {filepath}  \n"
             f"Complete error: {e}"
         )
         raise OSError(msg) from e
     except Exception as e:
         msg = (
-            f"An unexpected error occurred while reading the TOML file at {filepath}\n"
+            f"An unexpected error occurred while reading the TOML file at {filepath}  \n"
             f"Complete error: {e}"
             f"Please contact the developer for support using Get Help in the dropdown menu."
         )
