@@ -1,18 +1,52 @@
 """
 logging_config.py
 
-Centralized logging configuration for the analog_daddy package.
+Centralized logging configuration and Exception handling for the analog_daddy package.
 
 This module provides a setup_logging() function to configure logging for the entire application.
 If no log directory is specified, it defaults to ~/.analog_daddy/logs.
 Call setup_logging() once at the entry point of your app.
 Other modules should simply use the logging module; do not reconfigure logging elsewhere.
 """
-import os
+from pathlib import Path
 import logging
 import streamlit as st
 
-def setup_logging(log_dir: str = None) -> None:
+class CustomFileError(Exception):
+    """Custom exception for file errors with standardized messages."""
+    ERROR_MESSAGES = {
+        FileNotFoundError:
+            "The file/directory is not found at the provided path. ",
+        PermissionError:
+            "Permission denied when reading/writing/creating file/directory at the provided path. "
+            "Please ensure you have the necessary permissions. ",
+        FileExistsError:
+            "A file/directory already exists at the provided path. "
+            "Either delete it or specify a different path. ",
+        OSError:
+            "An Operating System level error has occurred "
+            "while reading/writing/accessing file/directory. "
+            "Contact the developer for support. ",
+        Exception:
+            "An unexpected error has occured "
+            "while reading/writing/accessing file/directory. "
+            "Contact the developer for support. "
+    }
+
+    def __init__(self, filepath: str, exc: Exception):
+        error_type = type(exc)
+        msg = self.ERROR_MESSAGES.get(error_type, self.ERROR_MESSAGES[Exception])
+        full_msg = (
+            f"{msg}\n"
+            f"File: {filepath}\n"
+            f"Error type: {error_type.__name__}\n"
+            f"Details: {exc}"
+        )
+        super().__init__(full_msg)
+
+def setup_logging(
+        log_dir: str = "~/.analog_daddy/logs"
+        ) -> None:
     """
     Set up logging for the analog_daddy package.
     Logs are written to ~/.analog_daddy/logs/analog_daddy.log
@@ -20,41 +54,17 @@ def setup_logging(log_dir: str = None) -> None:
     Call this once at the entry point of your application.
     Avoids adding duplicate handlers on Streamlit reruns.
     """
-    if log_dir is None:
-        log_dir = os.path.expanduser('~/.analog_daddy/logs')
+    log_dir_path = Path(log_dir).expanduser()
     try:
-        os.makedirs(log_dir, exist_ok=True)
-    except PermissionError as e:
-        msg = (
-            f"Permission denied while creating log directory: {log_dir}.  \n"
-            f"Complete error: {e}"
-        )
-        raise PermissionError(msg) from e
-    except FileExistsError as e:
-        msg = (
-            f"A file (not a directory) exists at the log directory path: {log_dir}.  \n"
-            f"Complete error: {e}"
-        )
-        raise FileExistsError(msg) from e
-    except OSError as e:
-        msg = (
-            f"OS error while creating log directory: {log_dir}.  \n"
-            f"Complete error: {e}"
-        )
-        raise OSError(msg) from e
+        log_dir_path.mkdir(parents=True, exist_ok=True)
     except Exception as e:
-        msg = (
-            f"An unexpected error occurred while creating log directory: {log_dir}  \n"
-            f"Complete error: {e}"
-            f"Please contact the developer for support using Get Help in the dropdown menu."
-        )
-        raise RuntimeError(msg) from e
+        raise CustomFileError(str(log_dir_path), e) from e
 
-    log_path = os.path.join(log_dir, 'analog_daddy.log')
+    log_path = log_dir_path / 'analog_daddy.log'
     logger = logging.getLogger()
     # Only add handler if no handlers exist
     if not logger.handlers:
-        file_handler = logging.FileHandler(log_path, mode='a')
+        file_handler = logging.FileHandler(str(log_path), mode='a')
         file_handler.setLevel(logging.INFO)
         formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
         file_handler.setFormatter(formatter)
