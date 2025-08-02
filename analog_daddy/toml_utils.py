@@ -1,51 +1,29 @@
 import os
 from typing import List, Dict, Any, KeysView
+from pathlib import Path
 import pandas as pd
 import tomlkit
-import streamlit as st
+from analog_daddy.logging_config import CustomFileError
 
-# Using Streamlit's caching mechanism to avoid re-reading the file multiple times
-@st.cache_resource
-def config_toml_reader(filepath: str = None) -> Dict[str, Any]:
+# The function will be decorated for resource caching when using with streamlit at the top level.
+def config_toml_reader(
+        filepath: str = "~/.analog_daddy/config/config.toml"
+        ) -> Dict[str, Any]:
     """
     Read the TOML configuration file and return it as a dictionary.
     If no filepath is provided, defaults to a standard config path
     at ~/.analog_daddy/config/config.toml
-    If the file does not exist, raises a FileNotFoundError.
+    If the file does not exist, raises a CustomFileError.
     """
-    if filepath is None:
-        filepath = os.path.expanduser('~/.analog_daddy/config/config.toml')
+    path = Path(filepath).expanduser()
     try:
-        with open(filepath, "r", encoding="utf-8") as f:
+        with path.open("r", encoding="utf-8") as f:
             # toml file is now loaded as a TOMLDocument (preserves comments)
             toml_doc = tomlkit.load(f)
             # Convert to dict for downstream compatibility
             return dict(toml_doc)
-    except FileNotFoundError as e:
-        msg = (
-            f"The TOML file is not found at: {filepath}  \n"
-            f"Complete error: {e}"
-        )
-        raise FileNotFoundError(msg) from e
-    except PermissionError as e:
-        msg = (
-            f"Permission denied when trying to read the TOML file at {filepath}  \n"
-            f"Complete error: {e}"
-        )
-        raise PermissionError(msg) from e
-    except OSError as e:
-        msg = (
-            f"OS error when trying to read the TOML file at {filepath}  \n"
-            f"Complete error: {e}"
-        )
-        raise OSError(msg) from e
     except Exception as e:
-        msg = (
-            f"An unexpected error occurred while reading the TOML file at {filepath}  \n"
-            f"Complete error: {e}"
-            f"Please contact the developer for support using Get Help in the dropdown menu."
-        )
-        raise RuntimeError(msg) from e
+        raise CustomFileError(str(path), e) from e
 
 def circuit_toml_reader(
         lut_metadata: List = None,
