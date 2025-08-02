@@ -41,7 +41,7 @@ codeBackgroundColor = "#282a36"
 font = "monospace, sans-serifm serif"
 
 # The font family to use for code (monospace) in the sidebar.
-codefont = "monospace, sans-serifm serif"
+codeFont = "monospace, sans-serifm serif"
 
 # Sets the font size (in pixels or rem) for code blocks and code text.
 # This applies to `st.code`, `st.json`, and `st.help`.
