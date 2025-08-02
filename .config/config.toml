@@ -4,10 +4,10 @@
 
 # The following section can be used to configure the tool settings.
 [tool]
-METHOD_KEY = "METHOD"
-WARNING_KEY = "WARNING"
+method_key = "METHOD"
+warning_key = "WARNING"
 # The importer will output information about the imported data in real-time.
-IMPORTER_VERBOSE = true
+importer_verbose = true
 
 ######### BEGIN DASHBOARD CONFIGURATION #########
 # The following section can be used to configure the dashboard settings.
@@ -31,51 +31,51 @@ debug_mode = false
 technology_info = "GPDK 45nm spectre"
 # Constants to avoid magic strings throughout the python code.
 # As well as to make sure the code functions for all technologies.
-PARAMETER_TAG = "Parameters:"
-GM_KEY_START = "gm_"
-LENGTH_KEY = "length"
-GS_KEY = "gs"
-DS_KEY = "ds"
-SB_KEY = "sb"
-DB_KEY = "db"
-GB_KEY = "gb"
-# Supply Voltage (Vdd) in Volts.
-VDD = "1.2"
+parameter_tag = "Parameters:"
+gm_key_start = "gm_"
+length_key = "length"
+gs_key = "gs"
+ds_key = "ds"
+sb_key = "sb"
+db_key = "db"
+gb_key = "gb"
+# Supply Voltage (vdd) in Volts.
+vdd = "1.2"
 # for technologies that only allow stacking and multipliers.
 # Is the length/width an integer?
-IS_INTEGER = false
+is_integer = false
 # Length Range (in m)
-L_MIN = "45n"
-L_MAX = "10u"
-LENGTH_INCREMENT = "10n"
+l_min = "45n"
+l_max = "10u"
+length_increment = "10n"
 # Width Range (in m) (Per-Finger)
-W_MIN = "90n"
-W_MAX = "1m"
+w_min = "90n"
+w_max = "100u"
 # Voltage Step Size = 20 mV. This is the default step size
 # which will be selected for our voltage sweeps.
 # Note that decreasing sizes would not lead to more accurate results
 # since the lookup function interpolates.
-VOLTAGE_STEP_SIZE = "20mv"
+voltage_step_size = "20m"
 
 [freepdk_45nm]
 technology_info = "freepdk 45nm ngspice"
-PARAMETER_TAG = "Parameters:"
-GM_KEY_START = "gm_"
-LENGTH_KEY = "length"
-GS_KEY = "gs"
-DS_KEY = "ds"
-SB_KEY = "sb"
-DB_KEY = "db"
-GB_KEY = "gb"
+parameter_tag = "Parameters:"
+gm_key_start = "gm_"
+length_key = "length"
+gs_key = "gs"
+ds_key = "ds"
+sb_key = "sb"
+db_key = "db"
+gb_key = "gb"
 # Max Supply Voltage (Vdd) in Volts
-VDD = "1"
+vdd = "1"
 # FinFET technologies only allow stacking and multipliers.
-IS_INTEGER = false
+is_integer = false
 # Length Range (in m)
-L_MIN = "45n"
-L_MAX = "10u"
-LENGTH_INCREMENT = "10n"
+l_min = "45n"
+l_max = "10u"
+length_increment = "10n"
 # Width Range (in m) (Per-Finger)
-W_MIN = "90n"
-W_MAX = "1m"
-VOLTAGE_STEP_SIZE = "20mv"
+w_min = "90n"
+w_max = "1m"
+voltage_step_size = "20m"
