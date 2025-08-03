@@ -1,9 +1,25 @@
+"""
+Designer Dashboard Streamlit App
+
+This module implements the main dashboard page for the Analog Daddy designer interface.
+This is the launch point. It sets up configuration, logging, and page layout.
+
+Main Features:
+- Loads configuration and logging settings from environment and config files.
+- Renders a sidebar for file upload, debug mode, and advanced preferences.
+- Displays status messages and handles error flow control to prevent further execution on failure.
+- Provides a form for bulk editing circuit data, with submission handling and debug info display.
+
+Error Handling:
+- Gracefully handles configuration and logging setup errors, displaying them in the UI.
+"""
 import os
 import streamlit as st
 from analog_daddy.designer_dashboard.sidebar import render_sidebar
 from analog_daddy.designer_dashboard.ui_elements import lut_info_table, circuit_bulk_editor
 from analog_daddy.logging_config import setup_logging, st_log_print
 from analog_daddy.designer_dashboard.debug import show_page_debug_info
+from analog_daddy.config import load_config, CONFIG
 
 try:
     # define CONFIG as a global variable to be used in the app
@@ -12,17 +28,23 @@ try:
     # you can now just use
     # from analog_daddy.config import CONFIG
     # everywhere else since the exception handling is done here.
-    from analog_daddy.config import CONFIG
-    setup_logging(
-        os.path.join(os.path.dirname(__file__), '..', '.logs'))
+
+    # environment variables are used to allow user to use the launcher
+    # script and run streamlit in its own process.
+    config_path = os.environ.get("ANALOG_DADDY_CONFIG_PATH")
+    logdir_path = os.environ.get("ANALOG_DADDY_LOGDIR_PATH")
+    devel_mode = os.environ.get("ANALOG_DADDY_DEVEL_MODE")
+    # Load config and setup logging.
+    load_config(config_path)
+    setup_logging(logdir_path)
 except Exception as e:
     st_log_print(str(e), msg_type="error", stop=True)
 
 st.set_page_config(
     page_title="Designer Dashboard",
     page_icon="🧑‍🔬",
-    layout=CONFIG["dashboard"]["layout"],
-    initial_sidebar_state=CONFIG["dashboard"]["initial_sidebar_state"],
+    layout=CONFIG.dashboard.layout,
+    initial_sidebar_state=CONFIG.dashboard.initial_sidebar_state,
     menu_items={
         'Get Help':
         'https://github.com/siddhantladdha/analog_daddy?tab=readme-ov-file#provide-helpfeedback',
