@@ -52,9 +52,11 @@ def setup_logging(
     Logs are written to ~/.analog_daddy/logs/analog_daddy.log
     if no log_dir is specified.
     Call this once at the entry point of your application.
-    Avoids adding duplicate handlers on Streamlit reruns.
+    DON'T decorate this function with @st.cache_resource.
+    The program has checks to avoid adding duplicate handlers
+    on Streamlit reruns.
     """
-    log_dir_path = Path(log_dir).expanduser()
+    log_dir_path = Path(log_dir).expanduser().resolve()
     try:
         log_dir_path.mkdir(parents=True, exist_ok=True)
     except Exception as e:
