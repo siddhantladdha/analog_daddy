@@ -42,7 +42,7 @@ def render_sidebar():
                 [0, 1],
                 format_func=lambda x: dashboard_mode_options[x],
                 # 0 for "User Mode", 1 for "Debug Mode"
-                index=1 if CONFIG["dashboard"]["debug_mode"] else 0,
+                index=1 if CONFIG.dashboard.debug_mode else 0,
                 key="debug_mode_selector"
             )
 

@@ -10,6 +10,7 @@ from analog_daddy.logging_config import st_log_print
 from analog_daddy.plotter_dashboard.parse_si import (
     format_si_or_scientific as float_to_si
 )
+from analog_daddy.config import CONFIG
 
 def lut_info_table(lut_metadata: Dict[str,Any] = None):
     """
