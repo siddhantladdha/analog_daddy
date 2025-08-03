@@ -19,14 +19,16 @@ from analog_daddy.designer_dashboard.sidebar import render_sidebar
 from analog_daddy.designer_dashboard.ui_elements import lut_info_table, circuit_bulk_editor
 from analog_daddy.logging_config import setup_logging, st_log_print
 from analog_daddy.designer_dashboard.debug import show_page_debug_info
-from analog_daddy.config import load_config, CONFIG
+from analog_daddy.config import load_config_in_st
+import analog_daddy.config as config
 
 try:
     # define CONFIG as a global variable to be used in the app
     # and within submodules.
     # import within try-catch to handle any import errors gracefully.
     # you can now just use
-    # from analog_daddy.config import CONFIG
+    # import analog_daddy.config as config
+    # and use config.CONFIG for accessing the "live" config
     # everywhere else since the exception handling is done here.
 
     # environment variables are used to allow user to use the launcher
@@ -35,7 +37,7 @@ try:
     logdir_path = os.environ.get("ANALOG_DADDY_LOGDIR_PATH")
     devel_mode = os.environ.get("ANALOG_DADDY_DEVEL_MODE")
     # Load config and setup logging.
-    load_config(config_path)
+    load_config_in_st(config_path)
     setup_logging(logdir_path)
 except Exception as e:
     st_log_print(str(e), msg_type="error", stop=True)
@@ -43,8 +45,8 @@ except Exception as e:
 st.set_page_config(
     page_title="Designer Dashboard",
     page_icon="🧑‍🔬",
-    layout=CONFIG.dashboard.layout, # pylint: disable=E1101
-    initial_sidebar_state=CONFIG.dashboard.initial_sidebar_state, # pylint: disable=E1101
+    layout=config.CONFIG.dashboard.layout, # pylint: disable=E1101
+    initial_sidebar_state=config.CONFIG.dashboard.initial_sidebar_state, # pylint: disable=E1101
     menu_items={
         'Get Help':
         'https://github.com/siddhantladdha/analog_daddy?tab=readme-ov-file#provide-helpfeedback',
@@ -93,4 +95,3 @@ with st.form("my_form"):
 if submit_clicked:
     st_log_print("Circuit lookup submitted.", msg_type="success")
     show_page_debug_info(edited_df)
-

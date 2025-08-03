@@ -13,7 +13,7 @@ import pandas as pd
 from analog_daddy.plotter_dashboard.debug import st_pretty_print_lut
 # Redefine to use the designer_dashboard version.
 from analog_daddy.designer_dashboard.circuit_lookup import state_dict_creator
-from analog_daddy.config import CONFIG
+import analog_daddy.config as config
 # @st.cache_data
 # Disabling caching since need to support session state updates.
 def show_sidebar_debug_info(lut_roots=None,
@@ -26,7 +26,7 @@ def show_sidebar_debug_info(lut_roots=None,
     # since we are printing the list just use the LUT 0 (which always exists.)
     # LUT root display.
     with st.expander("CONFIG file", expanded=False):
-        st.write(CONFIG)
+        st.write(config.CONFIG.__dict__)
     if lut_roots:
         with st.expander("LUT Root Structure", expanded=False):
             st_pretty_print_lut(lut_roots)
