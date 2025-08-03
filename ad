@@ -1,0 +1,4 @@
+#!/bin/bash
+# analog_daddy launcher
+# Pass --help for usage information
+python -m analog_daddy.main "$@"
