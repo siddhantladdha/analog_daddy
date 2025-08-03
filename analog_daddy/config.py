@@ -22,8 +22,10 @@ Notes:
 - The config file is only read once per process, regardless of how many times CONFIG is imported.
 - Any exceptions during config loading should be handled at the application entry point, not here.
 """
-
-from analog_daddy.toml_utils import config_toml_reader
+from typing import Dict, Any
+from pathlib import Path
+import tomlkit
+from analog_daddy.logging_config import CustomFileError
 CONFIG = None
 
 class BaseConfigSection:
@@ -106,8 +108,41 @@ class AppConfig:
         object.__setattr__(self, name, value)
 
 # Load config as object
+# The function will be decorated for resource caching when using with streamlit at the top level.
 def load_config(config_path):
+    """
+    Loads the application configuration from the specified TOML file path.
+
+    This function reads the configuration file, parses its contents, and initializes
+    a global CONFIG object of type AppConfig, making it accessible to submodules.
+
+    Args:
+        config_path (str): The file path to the TOML configuration file.
+
+    Raises:
+        Passes along exceptions raised from config_toml_reader.
+    """
     config_dict = config_toml_reader(config_path)
     # Need a global config to make it accessible for submodules.
-    global CONFIG
+    global CONFIG # pylint: disable=global-statement
     CONFIG = AppConfig(config_dict)
+
+def config_toml_reader(
+        filepath: str = "~/.analog_daddy/config/config.toml"
+        ) -> Dict[str, Any]:
+    """
+    Read the TOML configuration file and return it as a dictionary.
+    If no filepath is provided, defaults to a standard config path
+    at ~/.analog_daddy/config/config.toml
+    If there are issues with opening files raises a CustomFileError.
+    TODO: Deal with tomlkit loading exceptions.
+    """
+    path = Path(filepath).expanduser()
+    try:
+        with path.open("r", encoding="utf-8") as f:
+            # toml file is now loaded as a TOMLDocument (preserves comments)
+            toml_doc = tomlkit.load(f)
+            # Convert to dict for downstream compatibility
+            return dict(toml_doc)
+    except Exception as e:
+        raise CustomFileError(str(path), e) from e

@@ -5,26 +5,6 @@ import pandas as pd
 import tomlkit
 from analog_daddy.logging_config import CustomFileError
 
-# The function will be decorated for resource caching when using with streamlit at the top level.
-def config_toml_reader(
-        filepath: str = "~/.analog_daddy/config/config.toml"
-        ) -> Dict[str, Any]:
-    """
-    Read the TOML configuration file and return it as a dictionary.
-    If no filepath is provided, defaults to a standard config path
-    at ~/.analog_daddy/config/config.toml
-    If the file does not exist, raises a CustomFileError.
-    """
-    path = Path(filepath).expanduser()
-    try:
-        with path.open("r", encoding="utf-8") as f:
-            # toml file is now loaded as a TOMLDocument (preserves comments)
-            toml_doc = tomlkit.load(f)
-            # Convert to dict for downstream compatibility
-            return dict(toml_doc)
-    except Exception as e:
-        raise CustomFileError(str(path), e) from e
-
 def circuit_toml_reader(
         lut_metadata: List = None,
         filepath: str = None,
