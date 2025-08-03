@@ -43,8 +43,8 @@ except Exception as e:
 st.set_page_config(
     page_title="Designer Dashboard",
     page_icon="🧑‍🔬",
-    layout=CONFIG.dashboard.layout,
-    initial_sidebar_state=CONFIG.dashboard.initial_sidebar_state,
+    layout=CONFIG.dashboard.layout, # pylint: disable=E1101
+    initial_sidebar_state=CONFIG.dashboard.initial_sidebar_state, # pylint: disable=E1101
     menu_items={
         'Get Help':
         'https://github.com/siddhantladdha/analog_daddy?tab=readme-ov-file#provide-helpfeedback',

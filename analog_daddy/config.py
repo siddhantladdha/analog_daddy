@@ -22,11 +22,10 @@ Notes:
 - The config file is only read once per process, regardless of how many times CONFIG is imported.
 - Any exceptions during config loading should be handled at the application entry point, not here.
 """
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from pathlib import Path
 import tomlkit
 from analog_daddy.logging_config import CustomFileError
-CONFIG = None
 
 class BaseConfigSection:
     """
@@ -107,6 +106,7 @@ class AppConfig:
             raise AttributeError(f"Cannot modify immutable AppConfig: '{name}'")
         object.__setattr__(self, name, value)
 
+CONFIG: Optional[AppConfig] = None
 # Load config as object
 # The function will be decorated for resource caching when using with streamlit at the top level.
 def load_config(config_path):
