@@ -25,6 +25,7 @@ Notes:
 from typing import Dict, Any, Optional
 from pathlib import Path
 import tomlkit
+import streamlit as st
 from analog_daddy.logging_config import CustomFileError
 
 class BaseConfigSection:
@@ -93,6 +94,7 @@ class AppConfig:
     """
     def __init__(self, config_dict):
         object.__setattr__(self, '_initialized', False)
+        self._raw_dict = config_dict  # Store the raw config dict
         self.dashboard = DashboardConfig(config_dict.get("dashboard", {}))
         self.tool = ToolConfig(config_dict.get("tool", {}))
         # Remove non-technology keys for TechnologyConfig
@@ -105,14 +107,19 @@ class AppConfig:
         if getattr(self, '_initialized', False):
             raise AttributeError(f"Cannot modify immutable AppConfig: '{name}'")
         object.__setattr__(self, name, value)
+    def __str__(self):
+        return str(self._raw_dict)
+    def __dict__(self):
+        return self._raw_dict
 
 CONFIG: Optional[AppConfig] = None
-# Load config as object
-# The function will be decorated for resource caching when using with streamlit at the top level.
-def load_config(config_path):
+
+def load_config_in_st(config_path):
     """
     Loads the application configuration from the specified TOML file path.
-
+    Uses Streamlit's caching to avoid reloading on every run.
+    Intended to be used with Streamlit applications.
+    This function is intended to be called at the top level of the application.
     This function reads the configuration file, parses its contents, and initializes
     a global CONFIG object of type AppConfig, making it accessible to submodules.
 
@@ -122,7 +129,8 @@ def load_config(config_path):
     Raises:
         Passes along exceptions raised from config_toml_reader.
     """
-    config_dict = config_toml_reader(config_path)
+    cached_config_toml_reader = st.cache_resource(config_toml_reader)
+    config_dict = cached_config_toml_reader(config_path)
     # Need a global config to make it accessible for submodules.
     global CONFIG # pylint: disable=global-statement
     CONFIG = AppConfig(config_dict)
@@ -137,7 +145,7 @@ def config_toml_reader(
     If there are issues with opening files raises a CustomFileError.
     TODO: Deal with tomlkit loading exceptions.
     """
-    path = Path(filepath).expanduser()
+    path = Path(filepath).expanduser().resolve()
     try:
         with path.open("r", encoding="utf-8") as f:
             # toml file is now loaded as a TOMLDocument (preserves comments)
