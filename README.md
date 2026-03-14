@@ -1,5 +1,10 @@
 # Analog Daddy
 
+## Update
+
+Hi. Quick update for anyone looking into using this library.
+Yes this tool is actively maintained. I am working on v3 of this library which will utilize and consider the feedback I have received. I intend to write a post detailing my learnings, experience and feedback received on this project once I find time.
+
 ## Motivation
 
 This library shows Analog Design who the daddy is. Well, it's just *an attempt to make transistor sizing less painful*.
