@@ -26,6 +26,7 @@
 - Always include concrete sources by default:
   - Repo claims: `path:line` citations.
   - Web claims: direct links.
+- For Polars API or behavior questions, prefer the `ask_polars` MCP server (configured in `.vscode/mcp.json`) before general web search.
 
 ## Python specific Instructions
 - Use python hints at every function boundary.
