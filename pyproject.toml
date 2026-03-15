@@ -1,3 +1,28 @@
+[project]
+name = "analog_daddy"
+version = "3.0.0"
+description = "This library is an attempt to make transistor sizing for Analog Design less painful."
+readme = "README.md"
+authors = [
+    { name = "Siddhant Laddha", email = "25705822+siddhantladdha@users.noreply.github.com" }
+]
+license = "AGPL-3.0-only"
+requires-python = ">=3.14"
+dependencies = [
+    "hypothesis>=6.151.9",
+    "plotly>=6.6.0",
+    "polars>=1.39.0",
+    "pydantic>=2.12.5",
+    "quantiphy>=2.21",
+    "scipy>=1.17.1",
+    "xarray>=2026.2.0",
+]
+[project.urls]
+Homepage = "https://github.com/siddhantladdha/analog_daddy"
+Repository = "https://github.com/siddhantladdha/analog_daddy.git"
+Issues = "https://github.com/siddhantladdha/analog_daddy/issues"
+
 [build-system]
-requires = ["setuptools==80.9.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["uv_build>=0.10.10,<0.11.0"]
+build-backend = "uv_build"
+
