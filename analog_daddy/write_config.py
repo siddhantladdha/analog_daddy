@@ -103,8 +103,6 @@ def write_config(config_path):
                                       default_values['W_MIN'], min_val=1, max_val=5)
         w_max = prompt_natural_number("Enter the value for W_MAX. Must be greater than W_MIN",
                                       default_values['W_MAX'], min_val=1, max_val=100)
-        w_max = prompt_natural_number("Enter the value for W_MAX. Must be greater than W_MIN",
-                                      default_values['W_MAX'], min_val=1, max_val=100)
     else:
         l_min = prompt_float("Enter the value for L_MIN",
                             default_values['L_MIN'], min_val=1e-15, max_val=1e-3)
