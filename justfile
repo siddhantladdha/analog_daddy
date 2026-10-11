@@ -66,9 +66,9 @@ release:
 
 # Remove all build, test and Python artifacts
 clean:
-    clean-build
-    clean-pyc
-    clean-test
+    just clean-build
+    just clean-pyc
+    just clean-test
 
 # Remove build artifacts
 clean-build:
@@ -84,6 +84,7 @@ clean-pyc:
     find . -name '*.pyo' -exec rm -f {} +
     find . -name '*~' -exec rm -f {} +
     find . -name '__pycache__' -exec rm -fr {} +
+    find . -name '.rumdl_cache' -exec rm -fr {} +
 
 # Remove test artifacts
 clean-test:
