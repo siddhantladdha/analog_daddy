@@ -1,0 +1,128 @@
+[project]
+name = "analog-daddy"
+version = "3.0.0b1"
+description = "This library is an attempt to make transistor sizing for Analog Design less painful. Additionally, provides helper utilities to minimize churn and errors in repetative tasks."
+readme = "README.md"
+requires-python = ">= 3.14"  # TODO: Review if 3.12 can be supported.
+license = "MIT"
+authors = [
+  { name = "Siddhant Laddha", email = "25705822+siddhantladdha@users.noreply.github.com" }
+]
+maintainers = [
+  { name = "Siddhant Laddha", email = "25705822+siddhantladdha@users.noreply.github.com" }
+]
+classifiers = [
+  "Intended Audience :: Education",
+  "Intended Audience :: Science/Research",
+  "Private :: Do Not Upload",
+  "Topic :: Scientific/Engineering",
+  "Typing :: Typed",
+]
+dependencies = [
+  "boltons",
+  "cyclopts; sys_platform != 'emscripten'",
+  "great-tables",
+  "plotly",
+  "polars",
+  "pydantic>=2",
+  "pydantic-settings",
+  "quantiphy",
+  "rich",
+  "scipy",
+  "xarray",
+]
+
+[project.urls]
+bugs = "https://github.com/siddhantladdha/analog_daddy/issues"
+changelog = "https://github.com/siddhantladdha/analog_daddy/releases"
+documentation = "https://siddhantladdha.github.io/analog_daddy/"
+homepage = "https://github.com/siddhantladdha/analog_daddy"
+
+[project.scripts]
+analog_daddy = "analog_daddy.cli:app"
+
+[dependency-groups]
+dev = [
+  "pytest",
+  "ruff",
+  "ty",
+]
+all = [
+  { include-group = "dev" },
+  { include-group = "docs" },
+  { include-group = "notebooks" },
+]
+docs = [
+  "mkdocstrings-python",
+  "nbconvert",  # marimo pdf exports.
+  "playwright",  # marimo pdf exports.
+  "zensical",
+]
+notebooks = [
+  "marimo[lsp,mcp,recommended]",
+  "wigglystuff",
+]
+
+[build-system]
+requires = ["uv_build>=0.11.0,<0.12.0"]
+build-backend = "uv_build"
+
+[tool.ruff]
+line-length = 120
+extend-exclude = ["archives", "drafts"]
+
+[tool.ruff.lint]
+ignore = [
+  # "F401",  # F401: module imported but unused
+  # "D100",  # Missing docstring in public module"
+  # "D103",  # undocumented-public-method
+  "D105",  # undocumented-magic-method
+  "D401",  # non-imperative-mood
+]
+extend-select = [
+  "NPY",  # numpy
+  "D",  # docstring # needs convention
+  "N",  # pep8-naming
+  "PTH",  # flake8-use-pathlib
+  "SIM",  # flake8-simplify
+  "EXE",  # flake8-executable
+  "FURB110",
+  "FURB116",
+  "FURB167",
+  "FURB177",
+  "B903",
+  "TRY300",
+  "LOG004",
+  "LOG007",
+  "UP042",
+  "PERF403",
+  "PERF401",
+  #############
+  # Preview rules
+  "FURB113",
+  "FURB152",
+  "FURB156",
+  #############
+  #############
+  # Enable the following when working on spaghetti and old code.
+  # "FURB",
+  # "UP",
+  #############
+]
+# There are certain `preview`/beta rules that I am selectively enabling.
+preview = true
+explicit-preview-rules = true
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.ty]
+# All rules are enabled as "error" by default; no need to specify unless overriding.
+# Example override: relax a rule for the entire project (uncomment if needed).
+# rules.TY015 = "warn"  # For invalid-argument-type, warn instead of error.
+
+[tool.uv]
+default-groups = ["all"]
