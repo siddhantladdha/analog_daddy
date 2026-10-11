@@ -1,7 +1,21 @@
 """Utilities for working with Polars DataFrames."""
 
+import re
+
 import polars as pl
-import regex as re
+from quantiphy import InvalidNumber, as_real
+
+_COL_RE = re.compile(
+    r"""
+            col # literal
+            \( # literal (
+            "  # literal "
+            (?P<var>\w+) # variable name
+            "  # literal "
+            \) # literal )
+        """,
+    re.VERBOSE,
+)
 
 
 def drop_all_null(df: pl.DataFrame) -> pl.DataFrame:
@@ -172,3 +186,105 @@ def explode_nested_params(
         .unnest("params")
         .drop("param_str")
     )
+
+
+def _parse_operand(operand: str, pattern: re.Pattern[str] = _COL_RE) -> pl.Expr:
+    """Parse an operand with SI prefixes and/or column references to a polars expression.
+
+    Examples
+    --------
+    >>> _parse_operand("10m").meta.eq(pl.lit(0.01))
+    True
+    >>> _parse_operand('col("foo")').meta.eq(pl.col("foo"))
+    True
+    """
+    if match := pattern.fullmatch(f"{operand}"):
+        return pl.col(match.group("var"))
+    return pl.lit(as_real(operand))
+
+
+def spec(
+    col: pl.Expr,
+    spec: str,
+    _near_tolerance: float = 0,
+) -> pl.Expr:
+    r"""
+    Parse a specification string into a boolean pass/fail ``pl.Expr`` over ``col``.
+
+    The spec string allows an ergonomic grammer for specifying constraints.
+    - Supports SI-prefixes using quantiphy (e.g. ``10m`` = 0.01, ``0.01k`` = 10)
+    - Supports simple column references ``col("name")``, which resolves to ``pl.col("name")``.
+
+    TODO: Support ternary of pass/fail and near using _near_tolerance in future.
+
+    Parameters
+    ----------
+    col : pl.Expr
+        The column expression to test against the spec.
+    spec : str
+        The spec string to parse.
+
+    Returns
+    -------
+    pl.Expr
+        A boolean expression that evaluates to True if the value in ``col``
+        satisfies the spec, and False otherwise.
+
+    Examples
+    --------
+    >>> df = pl.from_repr(r'''shape: (2, 3)
+    ... ┌──────┬──────┬─────┐
+    ... │ x    ┆ foo  ┆ bar │
+    ... │ ---  ┆ ---  ┆ --- │
+    ... │ f64  ┆ f64  ┆ f64 │
+    ... ╞══════╪══════╪═════╡
+    ... │ 9.0  ┆ 10.0 ┆ 5.0 │
+    ... │ 11.0 ┆ 10.0 ┆ 5.0 │
+    ... └──────┴──────┴─────┘
+    ... ''')
+    >>> lit_specs = [
+    ...     "> 10m",
+    ...     "< 0.01k",
+    ...     "range 8000m 10500m",
+    ...     "tolerance 10 20",
+    ... ]
+    >>> df.select(*(spec(pl.col("x"), s).alias(s) for s in lit_specs))
+    shape: (2, 4)
+    ┌───────┬─────────┬────────────────────┬─────────────────┐
+    │ > 10m ┆ < 0.01k ┆ range 8000m 10500m ┆ tolerance 10 20 │
+    │ ---   ┆ ---     ┆ ---                ┆ ---             │
+    │ bool  ┆ bool    ┆ bool               ┆ bool            │
+    ╞═══════╪═════════╪════════════════════╪═════════════════╡
+    │ true  ┆ true    ┆ true               ┆ true            │
+    │ true  ┆ false   ┆ false              ┆ true            │
+    └───────┴─────────┴────────────────────┴─────────────────┘
+    >>> calc_specs = {
+    ...     "range": 'range col("bar") col("foo")',
+    ...     "gt": '> col("foo")',
+    ...     "tol": 'tolerance col("foo") col("bar")',
+    ... }
+    >>> print(df.select(*(spec(pl.col("x"), s).alias(name) for name, s in calc_specs.items())).write_csv())
+    range,gt,tol
+    true,false,false
+    false,true,false
+    <BLANKLINE>
+    """
+    operator, *vals = spec.split()
+    try:
+        vals = [_parse_operand(v) for v in vals]
+    except InvalidNumber:
+        raise ValueError(f"bad numbers {vals} in spec: {spec}")
+
+    match operator:
+        case ">":
+            return col.gt(vals[0])
+        case "<":
+            return col.lt(vals[0])
+        case "range":
+            lo, hi = vals
+            return col.is_between(lo, hi)
+        case "tolerance" | "tol":  # "tolerance 10 2" -> 10 +/- 2%"
+            val, tol_pct = vals
+            tol_abs = abs(val) * tol_pct / 100
+            return col.is_between(val - tol_abs, val + tol_abs)
+    raise ValueError(f"bad spec: {spec}")
