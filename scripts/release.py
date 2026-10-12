@@ -14,6 +14,7 @@ def _run(*cmd: str) -> None:
 
 
 def main() -> None:
+    """Use pyproject.toml version to tag the current commit and create a GitHub release."""
     pyproject = tomllib.loads(Path("pyproject.toml").read_text())
     name = pyproject["project"]["name"]
     version = pyproject["project"]["version"]
