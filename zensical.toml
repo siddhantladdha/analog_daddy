@@ -8,7 +8,7 @@ nav = [
   { "Home" = "index.md" },
   { "Installation" = "installation.md" },
   { "Usage" = "usage.md" },
-  { "API Reference" = "api.md" },
+  { "API Reference" = "api" },
 ]
 
 [[project.theme.palette]]
@@ -23,5 +23,14 @@ scheme = "default"
 toggle.icon = "material/brightness-7"
 toggle.name = "Switch to dark mode"
 
-[project.plugins.mkdocstrings.handlers.python]
-paths = ["src"]
+[project.plugins.api-autonav]
+modules = ["src/analog_daddy"]
+api_root_uri = "api"
+exclude_private = false
+
+[project.plugins.mkdocstrings.handlers.python.options]
+docstring_style = "numpy"
+
+[project.plugins.llmstxt]
+
+[project.plugins.autorefs]
