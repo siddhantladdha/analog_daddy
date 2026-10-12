@@ -3,7 +3,7 @@ name = "analog-daddy"
 version = "3.0.0b1"
 description = "This library is an attempt to make transistor sizing for Analog Design less painful. Additionally, provides helper utilities to minimize churn and errors in repetative tasks."
 readme = "README.md"
-requires-python = ">= 3.14"  # TODO: Review if 3.12 can be supported.
+requires-python = ">= 3.14, < 3.15"  # TODO: Review if 3.12 can be supported.
 license = "MIT"
 authors = [
   { name = "Siddhant Laddha", email = "25705822+siddhantladdha@users.noreply.github.com" }
@@ -130,3 +130,4 @@ docstring-code-format = true
 
 [tool.uv]
 default-groups = ["all"]
+required-version = "==0.11.0"
