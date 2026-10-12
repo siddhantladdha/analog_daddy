@@ -85,6 +85,7 @@ clean-pyc:
     find . -name '*~' -exec rm -f {} +
     find . -name '__pycache__' -exec rm -fr {} +
     find . -name '.rumdl_cache' -exec rm -fr {} +
+    find . -name '.ruff_cache' -exec rm -fr {} +
 
 # Remove test artifacts
 clean-test:
