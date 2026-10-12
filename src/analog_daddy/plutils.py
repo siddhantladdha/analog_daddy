@@ -81,7 +81,7 @@ def filter_all_null(df: pl.DataFrame) -> pl.DataFrame:
     return df.filter(~pl.all_horizontal(pl.all().is_null()))
 
 
-def extract_parameter_keys(
+def _extract_first_parameter_keys(
     df: pl.DataFrame,
     scan_col: str,
     identify_str: str = "Parameters:",
@@ -121,7 +121,7 @@ def extract_parameter_keys(
     ...         "Value": [None, 10, 1, None],
     ...     }
     ... )
-    >>> extract_parameter_keys(df, scan_col="Point")
+    >>> _extract_first_parameter_keys(df, scan_col="Point")
     ['var1', 'var_b']
     """
     first: str | None = df.select(
@@ -288,3 +288,15 @@ def spec(
             tol_abs = abs(val) * tol_pct / 100
             return col.is_between(val - tol_abs, val + tol_abs)
     raise ValueError(f"bad spec: {spec}")
+
+
+def cleanup(df: pl.DataFrame, delimiter: str) -> pl.DataFrame:
+    """Basic clean-up of DataFrame."""
+    return (
+        # firstly we remove empty rows.
+        df.pipe(filter_all_null)
+        # then fill the DELIM_COL with junk to keep it.
+        .with_columns(pl.lit("|").alias(delimiter))
+        # finally drop any empty columns.
+        .pipe(drop_all_null)
+    )
