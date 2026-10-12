@@ -34,7 +34,7 @@ qa:
     uv run --python={{ python_version }} ruff check . --fix
     uv run --python={{ python_version }} ruff check --select I --fix .
     uv run --python={{ python_version }} ty check --output-format=concise .
-    uv run --python={{ python_version }} pytest .
+    uv run --python={{ python_version }} pytest
 
 # Run all the tests for all the supported Python versions
 testall:
