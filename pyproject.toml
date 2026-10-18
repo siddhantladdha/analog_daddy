@@ -1,6 +1,6 @@
 [project]
 name = "analog-daddy"
-version = "3.1-beta"
+version = "3.2-beta"
 description = "This library is an attempt to make transistor sizing for Analog Design less painful. Additionally, provides helper utilities to minimize churn and errors in repetative tasks."
 readme = "README.md"
 requires-python = ">= 3.12"
